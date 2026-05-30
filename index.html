@@ -472,6 +472,11 @@ body {
 <div class="page-footer"><span id="txt-footer">Os tempos apresentados são gerados aleatoriamente e não representam informação real de serviço.</span> &nbsp;·&nbsp; <span style="font-variant-numeric: tabular-nums; opacity:.5;">%%COMMIT_SHA%%</span></div>
 
 <script>
+document.body.innerHTML = document.body.innerHTML.replace(
+    '%%COMMIT_SHA%%',
+    Math.random().toString(16).slice(2, 9)
+);
+
 let alertActive = false;
 let currentLang = 'pt';
 let currentState = {};
