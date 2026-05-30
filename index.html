@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
@@ -99,12 +99,23 @@ body {
 /* ── Panel ───────────────────── */
 .panel {
     --s: 1;
+    --line-color: #5082C3;
     background: #00114a;
     color: white;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: calc(var(--s) * 22px) calc(var(--s) * 40px) calc(var(--s) * 18px);
+    position: relative;
+}
+
+.line-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--s) * 6px);
+    background: var(--line-color);
 }
 
 /* 0.5 px/mm */
@@ -120,10 +131,10 @@ body {
     align-items: baseline;
 }
 
-.label {
+.label {`n    display: none;
     font-size: calc(var(--s) * 19px);
-    font-weight: 500;
-    letter-spacing: .05em;
+    font-weight: 700;
+    letter-spacing: .05em;`n    white-space: nowrap;
     text-transform: uppercase;
 }
 
@@ -165,6 +176,17 @@ body {
     line-height: 1;
 }
 
+
+.time-block.blink {
+    animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.15; }
+}
+    50%       { opacity: 0; }
+}
 .time-unit {
     font-size: calc(var(--s) * 20px);
     font-weight: 400;
@@ -194,7 +216,7 @@ body {
     align-items: baseline;
     gap: calc(var(--s) * 32px);
     flex-shrink: 0;
-    margin-left: auto;
+    margin-left: auto;`n    padding-left: calc(var(--s) * 20px);
 }
 
 .after-times {
@@ -222,6 +244,10 @@ body {
     margin-top: calc(var(--s) * 1px);
 }
 
+.after-block:last-child {
+    opacity: .8;
+}
+
 /* ── Alert (inside row-after, left side) */
 .alert-strip {
     display: none;
@@ -242,16 +268,26 @@ body {
     background: #ffb400;
     flex-shrink: 0;
     border-radius: calc(var(--s) * 6px) 0 0 calc(var(--s) * 6px);
+    position: relative;
+    z-index: 2;
 }
 
 .alert-text {
-    font-size: calc(var(--s) * 22px);
+    font-size: calc(var(--s) * 27px);
     font-weight: 500;
     color: #00114a;
     line-height: 1.25;
     padding: 0 calc(var(--s) * 14px);
     display: flex;
     align-items: center;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes marquee {
+    0%   { transform: translateX(var(--marquee-from)); }
+    100% { transform: translateX(var(--marquee-to)); }
 }
 </style>
 </head>
@@ -273,6 +309,7 @@ body {
 <div class="preview-item visible" id="preview-a">
     <div class="preview-label">Tipo A · 2415 × 665 mm</div>
     <div class="panel tipo-a">
+        <div class="line-bar"></div>
         <div class="top">
             <div class="label">Linha Azul · Sentido</div>
             <div class="clock">11:43</div>
@@ -307,6 +344,7 @@ body {
 <div class="preview-item" id="preview-b">
     <div class="preview-label">Tipo B · 2500 × 560 mm</div>
     <div class="panel tipo-b">
+        <div class="line-bar"></div>
         <div class="top">
             <div class="label">Linha Azul · Sentido</div>
             <div class="clock">11:43</div>
@@ -341,6 +379,7 @@ body {
 <div class="preview-item" id="preview-c">
     <div class="preview-label">Tipo C · 2415 × 530 mm</div>
     <div class="panel tipo-c">
+        <div class="line-bar"></div>
         <div class="top">
             <div class="label">Linha Azul · Sentido</div>
             <div class="clock">11:43</div>
@@ -375,6 +414,7 @@ body {
 <div class="preview-item" id="preview-d">
     <div class="preview-label">Tipo D · 1420 × 390 mm</div>
     <div class="panel tipo-d">
+        <div class="line-bar"></div>
         <div class="top">
             <div class="label">Linha Azul · Sentido</div>
             <div class="clock">11:43</div>
@@ -422,6 +462,30 @@ function toggleAlert() {
     alertActive = !alertActive;
     document.getElementById('btn-alert').classList.toggle('active', alertActive);
     document.querySelectorAll('.alert-strip').forEach(el => el.classList.toggle('visible', alertActive));
+    if (alertActive) requestAnimationFrame(updateAlertScroll);
+}
+
+function updateAlertScroll() {
+    document.querySelectorAll('.alert-strip.visible').forEach(strip => {
+        const text = strip.querySelector('.alert-text');
+        const bar = strip.querySelector('.alert-bar');
+        const available = strip.clientWidth - bar.offsetWidth;
+
+        const single = text.dataset.msg || text.textContent;
+        text.textContent = single;
+        const singleWidth = text.scrollWidth;
+
+        if (singleWidth > available) {
+            text.textContent = `${single}  •  ${single}`;
+            const halfWidth = text.scrollWidth / 2;
+            const duration = halfWidth / 80;
+            text.style.setProperty('--marquee-from', '0px');
+            text.style.setProperty('--marquee-to', `-${halfWidth}px`);
+            text.style.animation = `marquee ${duration}s linear infinite`;
+        } else {
+            text.style.animation = 'none';
+        }
+    });
 }
 
 const lineNames_en = {
@@ -431,23 +495,30 @@ const lineNames_en = {
     'Linha Azul':     'Blue Line',
 };
 
+const lineColors = {
+    'Linha Vermelha': '#E6196E',
+    'Linha Verde':    '#00A0A5',
+    'Linha Amarela':  '#FAB914',
+    'Linha Azul':     '#5082C3',
+};
+
 const i18n = {
     pt: {
         direction: 'Sentido',
         min: 'min',
         alerts: (line) => [
-            'Circulação com atrasos. O tempo de espera pode ser superior ao normal.',
+            `${line}: Circulação com atrasos. O tempo de espera pode ser superior ao normal.`,
             `${line}: Circulação interrompida devido a causa alheia ao Metro. A reposição poderá ser superior a 15 minutos.`,
-            'Linha Amarela: Circulação interrompida entre Cidade Universitária e Rato devido a avaria de comboio.',
+            `Linha Amarela: Circulação interrompida entre Cidade Universitária e Rato devido a avaria de comboio.`,
         ],
     },
     en: {
         direction: 'Towards',
         min: 'min',
         alerts: (line) => [
-            'Service delays. Waiting times may be longer than usual.',
+            `${line}: Service delays. Waiting times may be longer than usual.`,
             `${line}: Service suspended due to external causes. Resumption may take over 15 minutes.`,
-            'Yellow Line: Service suspended between Cidade Universitária and Rato due to a train breakdown.',
+            `Yellow Line: Service suspended between Cidade Universitária and Rato due to a train breakdown.`,
         ],
     },
 };
@@ -456,17 +527,24 @@ function render() {
     const t = i18n[currentLang];
     const { lineName, destination, clock, next, after1, after2, alertIndex } = currentState;
     const displayLine = currentLang === 'en' ? lineNames_en[lineName] : lineName;
+    document.querySelectorAll('.panel').forEach(el => el.style.setProperty('--line-color', lineColors[lineName]));
     document.querySelectorAll('.label').forEach(el => el.textContent = `${displayLine} · ${t.direction}`);
     document.querySelectorAll('.destination').forEach(el => el.textContent = destination);
     document.querySelectorAll('.clock').forEach(el => el.textContent = clock);
     document.querySelectorAll('.time-value').forEach(el => el.textContent = next);
+    document.querySelectorAll('.time-block').forEach(el => el.classList.toggle('blink', next === 0));
     document.querySelectorAll('.time-unit').forEach(el => el.textContent = t.min);
     document.querySelectorAll('.after-unit').forEach(el => el.textContent = t.min);
-    document.querySelectorAll('.alert-text').forEach(el => el.textContent = t.alerts(displayLine)[alertIndex]);
+    document.querySelectorAll('.alert-text').forEach(el => {
+        const msg = t.alerts(displayLine)[alertIndex];
+        el.textContent = msg;
+        el.dataset.msg = msg;
+    });
     const afterValues = document.querySelectorAll('.after-value');
     for (let i = 0; i < afterValues.length; i += 2) {
         afterValues[i].textContent = after1;
         afterValues[i + 1].textContent = after2;
+        if (afterValues[i + 2]) afterValues[i + 2].textContent = after3;
     }
 }
 
@@ -475,6 +553,7 @@ function toggleLang() {
     document.getElementById('btn-lang').textContent = currentLang === 'pt' ? 'EN' : 'PT';
     document.getElementById('btn-lang').classList.toggle('active', currentLang === 'en');
     render();
+    requestAnimationFrame(updateAlertScroll);
 }
 
 (function randomise() {
@@ -491,7 +570,7 @@ function toggleLang() {
     const stations = lines[lineName];
 
     const now = new Date();
-    const next = rand(1, 9);
+    const next = rand(0, 9);
 
     currentState = {
         lineName,
@@ -500,11 +579,13 @@ function toggleLang() {
         next,
         after1: next + rand(5, 10),
         after2: next + rand(10, 20),
+        after3: next + rand(20, 30),
         alertIndex: rand(0, 2),
     };
 
     if (Math.random() < 0.3) toggleAlert();
     render();
+    requestAnimationFrame(updateAlertScroll);
 })();
 </script>
 
