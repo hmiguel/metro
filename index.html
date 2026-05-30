@@ -12,11 +12,17 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     margin: 0;
     padding: 32px 48px 48px;
     background: #111;
+    width: 100%;
     min-height: 100vh;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -118,6 +124,8 @@ body {
     display: none;
     flex-direction: column;
     gap: 8px;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .preview-item.visible {
@@ -501,6 +509,40 @@ let alertActive = false;
 let currentLang = 'pt';
 let currentState = {};
 
+const PANEL_SIZES = {
+    a: {w:1570, h:432, s:1.199},
+    b: {w:1625, h:364, s:1.011},
+    c: {w:1570, h:345, s:0.957},
+    d: {w:923,  h:254, s:0.705},
+};
+
+function scaleToFit() {
+    const bodyStyles = getComputedStyle(document.body);
+    const bodyPadding =
+        parseFloat(bodyStyles.paddingLeft) + parseFloat(bodyStyles.paddingRight);
+    const available = Math.max(0, document.documentElement.clientWidth - bodyPadding);
+    ['a','b','c','d'].forEach(t => {
+        const preview = document.getElementById('preview-' + t);
+        const panel   = preview && preview.querySelector('.panel');
+        if (!panel) return;
+        const {w, h} = PANEL_SIZES[t];
+        if (available < w) {
+            const scale = available / w;
+            panel.style.transform       = `scale(${scale})`;
+            panel.style.transformOrigin = 'top left';
+            preview.style.width    = Math.floor(available) + 'px';
+            preview.style.height   = Math.round(h * scale) + 21 + 'px'; // 21 = label + gap
+            preview.style.overflow = 'hidden';
+        } else {
+            panel.style.transform       = '';
+            panel.style.transformOrigin = '';
+            preview.style.width    = '';
+            preview.style.height   = '';
+            preview.style.overflow = '';
+        }
+    });
+}
+
 function selectType(type) {
     ['a','b','c','d'].forEach(t => {
         document.getElementById('preview-' + t).classList.toggle('visible', t === type);
@@ -671,6 +713,8 @@ function randomise() {
 }
 randomise();
 renderPage();
+scaleToFit();
+window.addEventListener('resize', scaleToFit);
 </script>
 </body>
 </html>
