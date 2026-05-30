@@ -207,21 +207,61 @@ body {
 
 .row-next {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: flex-start;
+    align-items: flex-end;
     width: 100%;
     padding-bottom: calc(var(--s) * 8px);
+    gap: calc(var(--s) * 18px);
 }
 
 body.layout-reversed .row-next {
     flex-direction: row-reverse;
 }
 
+.next-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    flex: 0 0 calc(var(--s) * 150px);
+    width: calc(var(--s) * 150px);
+    min-width: calc(var(--s) * 150px);
+    margin-left: auto;
+    padding-bottom: calc(var(--s) * 22px);
+    padding-right: calc(var(--s) * 30px);
+}
+
+body.layout-reversed .next-meta {
+    align-items: flex-start;
+    justify-content: flex-end;
+    margin-left: 0;
+    margin-right: auto;
+    padding-right: 0;
+    padding-left: calc(var(--s) * 30px);
+}
+
+.capacity-heads {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--s) * 5px);
+}
+
+.capacity-head {
+    width: calc(var(--s) * 22px);
+    height: calc(var(--s) * 22px);
+    background: rgba(255,255,255,.22);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M458.159,404.216c-18.93-33.65-49.934-71.764-100.409-93.431c-28.868,20.196-63.938,32.087-101.745,32.087c-37.828,0-72.898-11.89-101.767-32.087c-50.474,21.667-81.479,59.782-100.398,93.431C28.731,448.848,48.417,512,91.842,512c43.426,0,164.164,0,164.164,0s120.726,0,164.153,0C463.583,512,483.269,448.848,458.159,404.216z'/%3E%3Cpath d='M256.005,300.641c74.144,0,134.231-60.108,134.231-134.242v-32.158C390.236,60.108,330.149,0,256.005,0c-74.155,0-134.252,60.108-134.252,134.242V166.4C121.753,240.533,181.851,300.641,256.005,300.641z'/%3E%3C/svg%3E") center / contain no-repeat;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M458.159,404.216c-18.93-33.65-49.934-71.764-100.409-93.431c-28.868,20.196-63.938,32.087-101.745,32.087c-37.828,0-72.898-11.89-101.767-32.087c-50.474,21.667-81.479,59.782-100.398,93.431C28.731,448.848,48.417,512,91.842,512c43.426,0,164.164,0,164.164,0s120.726,0,164.153,0C463.583,512,483.269,448.848,458.159,404.216z'/%3E%3Cpath d='M256.005,300.641c74.144,0,134.231-60.108,134.231-134.242v-32.158C390.236,60.108,330.149,0,256.005,0c-74.155,0-134.252,60.108-134.252,134.242V166.4C121.753,240.533,181.851,300.641,256.005,300.641z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.capacity-head.filled {
+    background: white;
+}
+
 .time-block {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     width: calc(var(--s) * 92px);
     text-align: center;
     line-height: 1;
@@ -260,6 +300,7 @@ body.layout-reversed .row-next {
 .time-unit {
     font-size: calc(var(--s) * 20px);
     font-weight: 700;
+    line-height: 1;
     margin-top: calc(var(--s) * 1px);
 }
 
@@ -267,6 +308,8 @@ body.layout-reversed .row-next {
     font-size: calc(var(--s) * 130px);
     font-weight: 700;
     line-height: 1;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 body.layout-reversed .destination {
@@ -418,6 +461,7 @@ body.layout-reversed .alert-strip {
             <div class="row-next-wrap">
                 <div class="row-next">
                     <div class="destination">Santa Apolónia</div>
+                    <div class="next-meta"><div class="capacity-heads"></div></div>
                     <div class="time-block">
                         <span class="time-value">4</span>
                         <span class="time-unit">MIN</span>
@@ -453,6 +497,7 @@ body.layout-reversed .alert-strip {
             <div class="row-next-wrap">
                 <div class="row-next">
                     <div class="destination">Santa Apolónia</div>
+                    <div class="next-meta"><div class="capacity-heads"></div></div>
                     <div class="time-block">
                         <span class="time-value">4</span>
                         <span class="time-unit">MIN</span>
@@ -488,6 +533,7 @@ body.layout-reversed .alert-strip {
             <div class="row-next-wrap">
                 <div class="row-next">
                     <div class="destination">Santa Apolónia</div>
+                    <div class="next-meta"><div class="capacity-heads"></div></div>
                     <div class="time-block">
                         <span class="time-value">4</span>
                         <span class="time-unit">MIN</span>
@@ -523,6 +569,7 @@ body.layout-reversed .alert-strip {
             <div class="row-next-wrap">
                 <div class="row-next">
                     <div class="destination">Santa Apolónia</div>
+                    <div class="next-meta"><div class="capacity-heads"></div></div>
                     <div class="time-block">
                         <span class="time-value">4</span>
                         <span class="time-unit">MIN</span>
@@ -656,6 +703,16 @@ function formatWholeWaitTime(minutes) {
     return String(Math.ceil(minutes));
 }
 
+function renderCapacityHeads(el, level) {
+    const capacityOrder = ['low', 'medium', 'high'];
+    const filledCount = capacityOrder.indexOf(level) + 1;
+    const heads = capacityOrder.map((_, i) =>
+        `<span class="capacity-head${i < filledCount ? ' filled' : ''}"></span>`
+    ).join('');
+
+    el.innerHTML = heads;
+}
+
 const lineNames_en = {
     'Linha Vermelha': 'Red Line',
     'Linha Verde':    'Green Line',
@@ -693,7 +750,7 @@ const i18n = {
 
 function render() {
     const t = i18n[currentLang];
-    const { lineName, destination, clock, next, after1, after2, after3, alertIndex } = currentState;
+    const { lineName, destination, clock, next, after1, after2, after3, alertIndex, capacityLevel } = currentState;
     const displayLine = currentLang === 'en' ? lineNames_en[lineName] : lineName;
     document.querySelectorAll('.panel').forEach(el => el.style.setProperty('--line-color', lineColors[lineName]));
     document.querySelectorAll('.label').forEach(el => el.textContent = `${displayLine} · ${t.direction}`);
@@ -703,10 +760,13 @@ function render() {
     document.querySelectorAll('.time-block').forEach(el => el.classList.toggle('blink', next < 1));
     document.querySelectorAll('.time-unit').forEach(el => el.textContent = t.min);
     document.querySelectorAll('.after-unit').forEach(el => el.textContent = t.min);
+    document.querySelectorAll('.capacity-heads').forEach(el => renderCapacityHeads(el, capacityLevel));
+    document.querySelectorAll('.alert-strip').forEach(el => el.classList.toggle('visible', alertActive));
     document.querySelectorAll('.alert-text').forEach(el => {
         const msg = t.alerts(displayLine)[alertIndex];
         el.textContent = msg;
         el.dataset.msg = msg;
+        el.style.animation = 'none';
     });
     const afterValues = document.querySelectorAll('.after-value');
     for (let i = 0; i < afterValues.length; i += 2) {
@@ -770,6 +830,7 @@ function randomise() {
     const lineNames = Object.keys(lines);
     const lineName = lineNames[rand(0, lineNames.length - 1)];
     const stations = lines[lineName];
+    const capacityLevels = ['low', 'medium', 'high'];
 
     const now = new Date();
     const next = rand(0, 39) / 4;
@@ -783,9 +844,13 @@ function randomise() {
         after2: next + rand(10, 20),
         after3: next + rand(20, 30),
         alertIndex: rand(0, 2),
+        capacityLevel: capacityLevels[rand(0, capacityLevels.length - 1)],
     };
 
-    if (Math.random() < 0.3) toggleAlert();
+    if (!alertActive && Math.random() < 0.3) {
+        alertActive = true;
+        document.getElementById('btn-alert').classList.add('active');
+    }
     render();
     requestAnimationFrame(updateAlertScroll);
 }
