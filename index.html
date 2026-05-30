@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Metro Display</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 32px 48px 48px;
+    background: #111;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    font-family: "Ubuntu", sans-serif;
+}
+
+/* ── Selector bar ────────────── */
+.selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.selector-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,.35);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-right: 8px;
+}
+
+.selector-sep {
+    width: 1px;
+    height: 24px;
+    background: rgba(255,255,255,.15);
+    margin: 0 8px;
+}
+
+.selector button {
+    background: none;
+    border: 1px solid rgba(255,255,255,.2);
+    color: rgba(255,255,255,.5);
+    font-family: "Ubuntu", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+}
+
+.selector button:hover {
+    border-color: rgba(255,255,255,.5);
+    color: rgba(255,255,255,.8);
+}
+
+.selector button.active {
+    background: rgba(255,255,255,.12);
+    border-color: rgba(255,255,255,.6);
+    color: white;
+}
+
+.selector button.alert-btn.active {
+    background: rgba(255,180,0,.15);
+    border-color: rgba(255,180,0,.7);
+    color: #ffb400;
+}
+
+/* ── Preview area ────────────── */
+.preview-item {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.preview-item.visible {
+    display: flex;
+}
+
+.preview-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,.35);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+/* ── Panel ───────────────────── */
+.panel {
+    --s: 1;
+    background: #00114a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: calc(var(--s) * 22px) calc(var(--s) * 40px) calc(var(--s) * 18px);
+}
+
+/* 0.5 px/mm */
+.tipo-a { width: 1207px; height: 332px; --s: 0.922; }
+.tipo-b { width: 1250px; height: 280px; --s: 0.778; }
+.tipo-c { width: 1207px; height: 265px; --s: 0.736; }
+.tipo-d { width:  710px; height: 195px; --s: 0.542; }
+
+/* ── Header ─────────────────── */
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.label {
+    font-size: calc(var(--s) * 19px);
+    font-weight: 500;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.clock {
+    font-size: calc(var(--s) * 44px);
+    font-weight: 700;
+}
+
+/* ── Train rows ─────────────── */
+.trains {
+    display: flex;
+    flex-direction: column;
+}
+
+.row-next-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.row-next {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding-bottom: calc(var(--s) * 8px);
+}
+
+.time-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+}
+
+.time-value {
+    font-size: calc(var(--s) * 130px);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.time-unit {
+    font-size: calc(var(--s) * 20px);
+    font-weight: 400;
+    margin-top: calc(var(--s) * 1px);
+}
+
+.destination {
+    font-size: calc(var(--s) * 130px);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.divider {
+    height: 1px;
+    background: rgba(255,255,255,.5);
+    margin: calc(var(--s) * 11px) 0 calc(var(--s) * 10px);
+}
+
+.row-after {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+}
+
+.after-group {
+    display: flex;
+    align-items: baseline;
+    gap: calc(var(--s) * 32px);
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.after-times {
+    display: flex;
+    align-items: flex-end;
+    gap: calc(var(--s) * 32px);
+}
+
+.after-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+}
+
+.after-value {
+    font-size: calc(var(--s) * 50px);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.after-unit {
+    font-size: calc(var(--s) * 13px);
+    font-weight: 400;
+    margin-top: calc(var(--s) * 1px);
+}
+
+/* ── Alert (inside row-after, left side) */
+.alert-strip {
+    display: none;
+    align-items: stretch;
+    background: white;
+    flex: 1;
+    margin-right: calc(var(--s) * 20px);
+    overflow: hidden;
+    border-radius: calc(var(--s) * 6px);
+}
+
+.alert-strip.visible {
+    display: flex;
+}
+
+.alert-bar {
+    width: calc(var(--s) * 8px);
+    background: #ffb400;
+    flex-shrink: 0;
+    border-radius: calc(var(--s) * 6px) 0 0 calc(var(--s) * 6px);
+}
+
+.alert-text {
+    font-size: calc(var(--s) * 22px);
+    font-weight: 500;
+    color: #00114a;
+    line-height: 1.25;
+    padding: 0 calc(var(--s) * 14px);
+    display: flex;
+    align-items: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="selector">
+    <span class="selector-label">Painel de Cais</span>
+    <button onclick="selectType('a')" id="btn-a" class="active">Tipo A</button>
+    <button onclick="selectType('b')" id="btn-b">Tipo B</button>
+    <button onclick="selectType('c')" id="btn-c">Tipo C</button>
+    <button onclick="selectType('d')" id="btn-d">Tipo D</button>
+    <div class="selector-sep"></div>
+    <button onclick="toggleAlert()" id="btn-alert" class="alert-btn">⚠ Alerta</button>
+    <div class="selector-sep"></div>
+    <button onclick="toggleLang()" id="btn-lang">EN</button>
+</div>
+
+<div class="preview-item visible" id="preview-a">
+    <div class="preview-label">Tipo A · 2415 × 665 mm</div>
+    <div class="panel tipo-a">
+        <div class="top">
+            <div class="label">Linha Azul · Sentido</div>
+            <div class="clock">11:43</div>
+        </div>
+        <div class="trains">
+            <div class="row-next-wrap">
+                <div class="row-next">
+                    <div class="destination">Santa Apolónia</div>
+                    <div class="time-block">
+                        <span class="time-value">4</span>
+                        <span class="time-unit">min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row-after">
+                <div class="alert-strip">
+                    <div class="alert-bar"></div>
+                    <div class="alert-text">Circulação com atrasos. O tempo de espera pode ser superior ao normal.</div>
+                </div>
+                <div class="after-group">
+                    <div class="after-times">
+                        <div class="after-block"><span class="after-value">12</span><span class="after-unit">min</span></div>
+                        <div class="after-block"><span class="after-value">19</span><span class="after-unit">min</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="preview-item" id="preview-b">
+    <div class="preview-label">Tipo B · 2500 × 560 mm</div>
+    <div class="panel tipo-b">
+        <div class="top">
+            <div class="label">Linha Azul · Sentido</div>
+            <div class="clock">11:43</div>
+        </div>
+        <div class="trains">
+            <div class="row-next-wrap">
+                <div class="row-next">
+                    <div class="destination">Santa Apolónia</div>
+                    <div class="time-block">
+                        <span class="time-value">4</span>
+                        <span class="time-unit">min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row-after">
+                <div class="alert-strip">
+                    <div class="alert-bar"></div>
+                    <div class="alert-text">Circulação com atrasos. O tempo de espera pode ser superior ao normal.</div>
+                </div>
+                <div class="after-group">
+                    <div class="after-times">
+                        <div class="after-block"><span class="after-value">12</span><span class="after-unit">min</span></div>
+                        <div class="after-block"><span class="after-value">19</span><span class="after-unit">min</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="preview-item" id="preview-c">
+    <div class="preview-label">Tipo C · 2415 × 530 mm</div>
+    <div class="panel tipo-c">
+        <div class="top">
+            <div class="label">Linha Azul · Sentido</div>
+            <div class="clock">11:43</div>
+        </div>
+        <div class="trains">
+            <div class="row-next-wrap">
+                <div class="row-next">
+                    <div class="destination">Santa Apolónia</div>
+                    <div class="time-block">
+                        <span class="time-value">4</span>
+                        <span class="time-unit">min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row-after">
+                <div class="alert-strip">
+                    <div class="alert-bar"></div>
+                    <div class="alert-text">Circulação com atrasos. O tempo de espera pode ser superior ao normal.</div>
+                </div>
+                <div class="after-group">
+                    <div class="after-times">
+                        <div class="after-block"><span class="after-value">12</span><span class="after-unit">min</span></div>
+                        <div class="after-block"><span class="after-value">19</span><span class="after-unit">min</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="preview-item" id="preview-d">
+    <div class="preview-label">Tipo D · 1420 × 390 mm</div>
+    <div class="panel tipo-d">
+        <div class="top">
+            <div class="label">Linha Azul · Sentido</div>
+            <div class="clock">11:43</div>
+        </div>
+        <div class="trains">
+            <div class="row-next-wrap">
+                <div class="row-next">
+                    <div class="destination">Santa Apolónia</div>
+                    <div class="time-block">
+                        <span class="time-value">4</span>
+                        <span class="time-unit">min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row-after">
+                <div class="alert-strip">
+                    <div class="alert-bar"></div>
+                    <div class="alert-text">Circulação com atrasos. O tempo de espera pode ser superior ao normal.</div>
+                </div>
+                <div class="after-group">
+                    <div class="after-times">
+                        <div class="after-block"><span class="after-value">12</span><span class="after-unit">min</span></div>
+                        <div class="after-block"><span class="after-value">19</span><span class="after-unit">min</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let alertActive = false;
+let currentLang = 'pt';
+let currentState = {};
+
+function selectType(type) {
+    ['a','b','c','d'].forEach(t => {
+        document.getElementById('preview-' + t).classList.toggle('visible', t === type);
+        document.getElementById('btn-' + t).classList.toggle('active', t === type);
+    });
+}
+
+function toggleAlert() {
+    alertActive = !alertActive;
+    document.getElementById('btn-alert').classList.toggle('active', alertActive);
+    document.querySelectorAll('.alert-strip').forEach(el => el.classList.toggle('visible', alertActive));
+}
+
+const lineNames_en = {
+    'Linha Vermelha': 'Red Line',
+    'Linha Verde':    'Green Line',
+    'Linha Amarela':  'Yellow Line',
+    'Linha Azul':     'Blue Line',
+};
+
+const i18n = {
+    pt: {
+        direction: 'Sentido',
+        min: 'min',
+        alerts: (line) => [
+            'Circulação com atrasos. O tempo de espera pode ser superior ao normal.',
+            `${line}: Circulação interrompida devido a causa alheia ao Metro. A reposição poderá ser superior a 15 minutos.`,
+            'Linha Amarela: Circulação interrompida entre Cidade Universitária e Rato devido a avaria de comboio.',
+        ],
+    },
+    en: {
+        direction: 'Towards',
+        min: 'min',
+        alerts: (line) => [
+            'Service delays. Waiting times may be longer than usual.',
+            `${line}: Service suspended due to external causes. Resumption may take over 15 minutes.`,
+            'Yellow Line: Service suspended between Cidade Universitária and Rato due to a train breakdown.',
+        ],
+    },
+};
+
+function render() {
+    const t = i18n[currentLang];
+    const { lineName, destination, clock, next, after1, after2, alertIndex } = currentState;
+    const displayLine = currentLang === 'en' ? lineNames_en[lineName] : lineName;
+    document.querySelectorAll('.label').forEach(el => el.textContent = `${displayLine} · ${t.direction}`);
+    document.querySelectorAll('.destination').forEach(el => el.textContent = destination);
+    document.querySelectorAll('.clock').forEach(el => el.textContent = clock);
+    document.querySelectorAll('.time-value').forEach(el => el.textContent = next);
+    document.querySelectorAll('.time-unit').forEach(el => el.textContent = t.min);
+    document.querySelectorAll('.after-unit').forEach(el => el.textContent = t.min);
+    document.querySelectorAll('.alert-text').forEach(el => el.textContent = t.alerts(displayLine)[alertIndex]);
+    const afterValues = document.querySelectorAll('.after-value');
+    for (let i = 0; i < afterValues.length; i += 2) {
+        afterValues[i].textContent = after1;
+        afterValues[i + 1].textContent = after2;
+    }
+}
+
+function toggleLang() {
+    currentLang = currentLang === 'pt' ? 'en' : 'pt';
+    document.getElementById('btn-lang').textContent = currentLang === 'pt' ? 'EN' : 'PT';
+    document.getElementById('btn-lang').classList.toggle('active', currentLang === 'en');
+    render();
+}
+
+(function randomise() {
+    const lines = {
+        'Linha Vermelha': ['Aeroporto', 'São Sebastião'],
+        'Linha Verde':    ['Telheiras', 'Cais do Sodré'],
+        'Linha Amarela':  ['Odivelas', 'Rato'],
+        'Linha Azul':     ['Reboleira', 'Santa Apolónia'],
+    };
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    const lineNames = Object.keys(lines);
+    const lineName = lineNames[rand(0, lineNames.length - 1)];
+    const stations = lines[lineName];
+
+    const now = new Date();
+    const next = rand(1, 9);
+
+    currentState = {
+        lineName,
+        destination: stations[rand(0, stations.length - 1)],
+        clock: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+        next,
+        after1: next + rand(5, 10),
+        after2: next + rand(10, 20),
+        alertIndex: rand(0, 2),
+    };
+
+    if (Math.random() < 0.3) toggleAlert();
+    render();
+})();
+</script>
+
+</body>
+</html>
