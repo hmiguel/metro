@@ -486,6 +486,7 @@ function selectType(type) {
         document.getElementById('preview-' + t).classList.toggle('visible', t === type);
         document.getElementById('btn-' + t).classList.toggle('active', t === type);
     });
+    if (alertActive) requestAnimationFrame(updateAlertScroll);
 }
 
 function toggleAlert() {
