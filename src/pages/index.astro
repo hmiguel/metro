@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+---
+const commitSha = import.meta.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) ?? 'local';
+---
+<!DOCTYPE html>
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
@@ -9,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
 
-<style>
+<style is:global>
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
@@ -181,10 +184,12 @@ body {
     align-items: center;
 }
 
-.label {`n    display: none;
+.label {
+    display: block;
     font-size: calc(var(--s) * 19px);
     font-weight: 700;
-    letter-spacing: .05em;`n    white-space: nowrap;
+    letter-spacing: .05em;
+    white-space: nowrap;
     text-transform: uppercase;
 }
 
@@ -294,8 +299,6 @@ body.layout-reversed .next-meta {
 @keyframes blink {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.15; }
-}
-    50%       { opacity: 0; }
 }
 .time-unit {
     font-size: calc(var(--s) * 20px);
@@ -593,14 +596,9 @@ body.layout-reversed .alert-strip {
     </div>
 </div>
 
-<div class="page-footer"><span id="txt-footer">Os tempos apresentados são gerados aleatoriamente e não representam informação real de serviço.</span> &nbsp;·&nbsp; <a href="https://github.com/hmiguel/metro/commit/%%COMMIT_SHA%%" target="_blank" style="font-variant-numeric: tabular-nums; opacity:.5; color: inherit; text-decoration: none;">%%COMMIT_SHA%%</a></div>
+<div class="page-footer"><span id="txt-footer">Os tempos apresentados são gerados aleatoriamente e não representam informação real de serviço.</span> &nbsp;·&nbsp; <a href={`https://github.com/hmiguel/metro/commit/${commitSha}`} target="_blank" style="font-variant-numeric: tabular-nums; opacity:.5; color: inherit; text-decoration: none;">{commitSha}</a></div>
 
-<script>
-document.body.innerHTML = document.body.innerHTML.replace(
-    /%%COMMIT_SHA%%/g,
-    Math.random().toString(16).slice(2, 9)
-);
-
+<script is:inline>
 let alertActive = false;
 let currentLang = 'pt';
 let layoutReversed = false;
