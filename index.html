@@ -304,6 +304,8 @@ body {
     <button onclick="toggleAlert()" id="btn-alert" class="alert-btn">⚠ Alerta</button>
     <div class="selector-sep"></div>
     <button onclick="toggleLang()" id="btn-lang">EN</button>
+    <div class="selector-sep"></div>
+    <button onclick="randomise()">↺ Refresh</button>
 </div>
 
 <div class="preview-item visible" id="preview-a">
@@ -556,7 +558,7 @@ function toggleLang() {
     requestAnimationFrame(updateAlertScroll);
 }
 
-(function randomise() {
+function randomise() {
     const lines = {
         'Linha Vermelha': ['Aeroporto', 'São Sebastião'],
         'Linha Verde':    ['Telheiras', 'Cais do Sodré'],
@@ -586,7 +588,8 @@ function toggleLang() {
     if (Math.random() < 0.3) toggleAlert();
     render();
     requestAnimationFrame(updateAlertScroll);
-})();
+}
+randomise();
 </script>
 
 </body>
