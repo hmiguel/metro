@@ -1,13 +1,52 @@
 ---
 import stops from '../stops.json';
 const commitSha = import.meta.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) ?? 'local';
+const year = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Metro Display</title>
+
+<title>Metro de Lisboa · Teleinformação</title>
+<meta name="description" content="Proposta de novos painéis de teleinformação para o Metro de Lisboa — tempos de chegada em tempo real, simulação de alertas e ocupação de comboios.">
+<meta name="keywords" content="metro de lisboa, teleinformação, painéis informação, tempos chegada, metro lisboa, passenger information display, PID">
+<meta name="author" content="Hugo Conceição">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://metro.lixo.dev/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://metro.lixo.dev/">
+<meta property="og:title" content="Metro de Lisboa · Teleinformação">
+<meta property="og:description" content="Proposta de novos painéis de teleinformação para o Metro de Lisboa, com tempos de chegada em tempo real.">
+<meta property="og:locale" content="pt_PT">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Metro de Lisboa · Teleinformação">
+<meta name="twitter:description" content="Proposta de novos painéis de teleinformação para o Metro de Lisboa, com tempos de chegada em tempo real.">
+
+<!-- JSON-LD -->
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Metro de Lisboa · Teleinformação",
+  "description": "Simulador e proposta de design para os painéis de teleinformação do Metro de Lisboa. Apresenta tempos de chegada em tempo real e simulação de alertas e ocupação.",
+  "url": "https://metro.lixo.dev/",
+  "applicationCategory": "TransportationApplication",
+  "operatingSystem": "Web",
+  "inLanguage": ["pt-PT", "en"],
+  "isAccessibleForFree": true,
+  "author": { "@type": "Person", "name": "Hugo Conceição" },
+  "about": {
+    "@type": "Thing",
+    "name": "Metro de Lisboa",
+    "description": "Rede de metropolitano de Lisboa, Portugal"
+  }
+})}></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -530,13 +569,41 @@ body {
 }
 
 /* ── Footer ──────────────────── */
-.page-footer {
-    font-size: 11px;
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
     color: var(--footer-color);
-    letter-spacing: .06em;
-    padding-top: 8px;
+    font-size: .72rem;
+    font-weight: 400;
+    padding: 1.75rem 0 .5rem;
+    margin-top: auto;
+    text-align: center;
     transition: color .25s;
+    width: 100%;
 }
+.footer-gh {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    color: var(--footer-color);
+    text-decoration: none;
+    font-weight: 400;
+    transition: color .1s;
+}
+.footer-gh:hover { color: var(--primary); }
+.footer-gh svg { flex-shrink: 0; }
+.build-sha {
+    font-size: 11px;
+    font-weight: 400;
+    text-decoration: none;
+    color: var(--footer-color);
+    opacity: .5;
+    font-variant-numeric: tabular-nums;
+    transition: color .2s, opacity .2s;
+}
+.build-sha:hover { color: var(--primary); opacity: 1; }
 
 @media (max-width: 600px) {
     body {
@@ -898,33 +965,28 @@ body.layout-reversed .alert-strip {
 <div class="heading">
     <h1 class="page-title" id="txt-title">Metro de Lisboa · Teleinformação</h1>
     <div class="heading-actions">
-        <button onclick="toggleLiveMode()" id="btn-live" class="icon-btn live-btn" title="Live Data">
+        <button onclick="toggleLiveMode()" id="btn-live" class="icon-btn live-btn" title="Modo em directo" aria-label="Activar modo em directo" aria-pressed="false">
             <span class="live-indicator" aria-hidden="true"></span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                 <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
                 <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
                 <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
                 <circle cx="12" cy="20" r="1.5" fill="currentColor" stroke="none"/>
             </svg>
         </button>
-        <button onclick="randomise()" id="btn-refresh" class="icon-btn" title="Atualizar">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <button onclick="randomise()" id="btn-refresh" class="icon-btn" title="Atualizar" aria-label="Atualizar painel">
+            <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M23 4v6h-6"/>
                 <path d="M1 20v-6h6"/>
                 <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
             </svg>
         </button>
-        <button onclick="toggleTheme()" id="btn-theme" class="icon-btn" title="Tema">
+        <button onclick="toggleTheme()" id="btn-theme" class="icon-btn" title="Alternar tema" aria-label="Alternar tema claro/escuro">
             <svg aria-hidden="true" focusable="false" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="5"/>
                 <path stroke-linecap="round" d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
             </svg>
         </button>
-        <a href="https://github.com/hmiguel/metro" target="_blank" class="gh-link" title="GitHub">
-            <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-            </svg>
-        </a>
     </div>
 </div>
 
@@ -1027,7 +1089,7 @@ body.layout-reversed .alert-strip {
 <div class="preview-item visible" id="preview-a">
     <div class="preview-label">Tipo A · 2415 × 665 mm</div>
     <div class="panel-frame">
-    <div class="panel tipo-a">
+    <div class="panel tipo-a" role="region" aria-label="Painel de teleinformação" aria-live="polite" aria-atomic="false">
         <div class="line-bar"></div>
         <div class="top">
             <div class="label">Linha Azul · Sentido</div>
@@ -1176,7 +1238,16 @@ body.layout-reversed .alert-strip {
     </div>
 </div>
 
-<div class="page-footer"><span id="txt-footer">Os tempos apresentados são gerados aleatoriamente e não representam informação real de serviço.</span> &nbsp;·&nbsp; <a href={`https://github.com/hmiguel/metro/commit/${commitSha}`} target="_blank" style="font-variant-numeric: tabular-nums; opacity:.5; color: inherit; text-decoration: none;">{commitSha}</a></div>
+<footer class="footer">
+    <span><span id="txt-footer">Os tempos apresentados são gerados aleatoriamente e não representam informação real de serviço.</span> · {year}</span>
+    <a class="footer-gh" href="https://github.com/hmiguel/metro" target="_blank" rel="noopener noreferrer" aria-label="Ver código no GitHub">
+        <svg aria-hidden="true" focusable="false" width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        hmiguel/metro
+    </a>
+    <a href={`https://github.com/hmiguel/metro/commit/${commitSha}`} target="_blank" rel="noopener noreferrer" class="build-sha" title={`Build: ${commitSha}`}>{commitSha}</a>
+</footer>
 
 
 <script is:inline define:vars={{ stops }}>
@@ -1259,6 +1330,7 @@ function setLang(lang) {
     currentLang = lang;
     document.getElementById('btn-lang-pt').classList.toggle('active', lang === 'pt');
     document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+    document.documentElement.lang = lang === 'en' ? 'en' : 'pt';
     render();
     requestAnimationFrame(updateAlertScroll);
     renderPage();
@@ -1392,7 +1464,9 @@ async function randomStation() {
 
 async function toggleLiveMode() {
     liveMode = !liveMode;
-    document.getElementById('btn-live').classList.toggle('active', liveMode);
+    const liveBtn = document.getElementById('btn-live');
+    liveBtn.classList.toggle('active', liveMode);
+    liveBtn.setAttribute('aria-pressed', liveMode ? 'true' : 'false');
     renderPage();
     if (liveMode) {
         if (!liveStation) {
