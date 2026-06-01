@@ -2,6 +2,8 @@
 
 **[metro.lixo.dev](https://metro.lixo.dev)**
 
+![Metro de Lisboa · Teleinformação](assets/Animation.gif)
+
 ---
 
 ## The story
