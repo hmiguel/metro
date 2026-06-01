@@ -478,6 +478,21 @@ body {
     color: var(--primary);
 }
 
+/* ── Destination row (select + random btn) ── */
+.dest-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+}
+.dest-row .destination-select {
+    flex: 1;
+}
+.dest-row .icon-btn {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+}
+
 /* ── Destination select ──────── */
 .destination-select {
     background: var(--input-bg);
@@ -609,6 +624,18 @@ body {
     body {
         padding: 16px 16px 32px;
         gap: 16px;
+    }
+    .controls-row {
+        flex-direction: column;
+        align-self: stretch;
+    }
+    .about-block {
+        width: 100%;
+        align-self: stretch;
+        justify-content: flex-start;
+    }
+    .selector-col {
+        align-self: stretch;
     }
     .selector {
         align-self: stretch;
@@ -1008,18 +1035,20 @@ body.layout-reversed .alert-strip {
             <div id="station-suggestions" class="station-suggestions hidden"></div>
         </div>
         <span class="sel-label-inline" id="txt-dest-label">Destino</span>
-        <select id="destination-select" class="destination-select" onchange="selectDestination(this.value)">
-            <option value="">--</option>
-        </select>
-        <button onclick="randomStation()" class="icon-btn" title="Estação aleatória">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="16 3 21 3 21 8"/>
-                <line x1="4" y1="20" x2="21" y2="3"/>
-                <polyline points="21 16 21 21 16 21"/>
-                <line x1="15" y1="15" x2="21" y2="21"/>
-                <line x1="4" y1="4" x2="9" y2="9"/>
-            </svg>
-        </button>
+        <div class="dest-row">
+            <select id="destination-select" class="destination-select" onchange="selectDestination(this.value)">
+                <option value="">--</option>
+            </select>
+            <button onclick="randomStation()" class="icon-btn" title="Estação aleatória" aria-label="Estação aleatória">
+                <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 3 21 3 21 8"/>
+                    <line x1="4" y1="20" x2="21" y2="3"/>
+                    <polyline points="21 16 21 21 16 21"/>
+                    <line x1="15" y1="15" x2="21" y2="21"/>
+                    <line x1="4" y1="4" x2="9" y2="9"/>
+                </svg>
+            </button>
+        </div>
     </div>
 </div>
 
