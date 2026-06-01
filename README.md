@@ -1,50 +1,51 @@
-# Metro Display
+# Lisbon Metro · Passenger Information Display
 
-Passenger information panel prototype for Lisboa Metro platform displays.
+**[metro.lixo.dev](https://metro.lixo.dev)**
 
-## Overview
+---
 
-Astro-based prototype simulating real-time train departure boards deployed across Lisboa Metro stations. Supports all four physical panel types and all four lines.
+## The story
 
-## Panel Types
+Lisbon Metro began replacing the passenger information displays on its platforms — panels that had been in use for decades — with new modern screens. The problem: the new design fell short of expectations.
 
-| Type   | Dimensions (mm)  |
-|--------|------------------|
-| Tipo A | 2415 x 665 x 170 |
-| Tipo B | 2500 x 560 x 260 |
-| Tipo C | 2415 x 530 x 260 |
-| Tipo D | 1420 x 390 x 160 |
+This project is an alternative proposal. A suggestion for what the new panels could look like: clear, functional, and with a visual identity worthy of a modern metropolitan network.
+
+---
 
 ## Features
 
-- Panel type selector (Tipo A-D)
-- Line colour bar at the top of each panel
-- Randomised line, destination, clock, train times, and capacity
-- Next train seconds display in 15-second steps
-- Next train capacity heads
-- Following trains
-- 0 minute countdown with smooth blink animation
-- Alert strip with scrolling marquee
-- Alert toggle with sample messages in PT and EN
-- PT / EN language toggle
-- Left / right layout toggle
+- Simulation of all four physical panel types (Type A–D)
+- Live mode with real-time arrival data from the Lisbon Metro API
+- Station and destination selectable manually or at random
+- Line colour bar
+- Clock, arrival times, and train occupancy (simulated)
+- Alerts with animated marquee and message cycling
+- Alerts, orientation (left/right), and language (PT/EN) toggles
+- Light/dark theme
+- Responsive design
+
+## Panel types
+
+| Type   | Dimensions (mm)  |
+|--------|------------------|
+| Type A | 2415 × 665 × 170 |
+| Type B | 2500 × 560 × 260 |
+| Type C | 2415 × 530 × 260 |
+| Type D | 1420 × 390 × 160 |
+
+---
 
 ## Development
 
-Install dependencies:
-
 ```sh
 npm install
-```
-
-Run locally:
-
-```sh
 npm run dev
 ```
-
-Build static output:
 
 ```sh
 npm run build
 ```
+
+---
+
+Built with [Astro](https://astro.build). Real-time data provided by the Lisbon Metro API.
