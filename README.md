@@ -48,4 +48,4 @@ npm run build
 
 ---
 
-Built with [Astro](https://astro.build). Real-time data provided by the Lisbon Metro API.
+Built with [Astro](https://astro.build). Real-time data provided by the Lisbon Metro API, served by [abelhato](https://4belhato.trade).
