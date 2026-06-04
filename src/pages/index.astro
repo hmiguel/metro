@@ -731,6 +731,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow: hidden;
     padding: calc(var(--s) * 22px) calc(var(--s) * 40px) calc(var(--s) * 18px);
     position: relative;
 }
@@ -775,6 +776,7 @@ body {
 .trains {
     display: flex;
     flex-direction: column;
+    flex: 1;
 }
 
 .row-next-wrap {
@@ -785,11 +787,10 @@ body {
 
 .row-next {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: flex-end;
     width: 100%;
     padding-bottom: calc(var(--s) * 8px);
-    gap: calc(var(--s) * 18px);
 }
 
 body.layout-reversed .row-next {
@@ -821,20 +822,57 @@ body.layout-reversed .next-meta {
 .capacity-heads {
     display: flex;
     align-items: center;
-    gap: calc(var(--s) * 5px);
+    gap: calc(var(--s) * 4px);
 }
 
-.capacity-head {
-    width: calc(var(--s) * 22px);
-    height: calc(var(--s) * 22px);
-    background: rgba(255,255,255,.22);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M458.159,404.216c-18.93-33.65-49.934-71.764-100.409-93.431c-28.868,20.196-63.938,32.087-101.745,32.087c-37.828,0-72.898-11.89-101.767-32.087c-50.474,21.667-81.479,59.782-100.398,93.431C28.731,448.848,48.417,512,91.842,512c43.426,0,164.164,0,164.164,0s120.726,0,164.153,0C463.583,512,483.269,448.848,458.159,404.216z'/%3E%3Cpath d='M256.005,300.641c74.144,0,134.231-60.108,134.231-134.242v-32.158C390.236,60.108,330.149,0,256.005,0c-74.155,0-134.252,60.108-134.252,134.242V166.4C121.753,240.533,181.851,300.641,256.005,300.641z'/%3E%3C/svg%3E") center / contain no-repeat;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M458.159,404.216c-18.93-33.65-49.934-71.764-100.409-93.431c-28.868,20.196-63.938,32.087-101.745,32.087c-37.828,0-72.898-11.89-101.767-32.087c-50.474,21.667-81.479,59.782-100.398,93.431C28.731,448.848,48.417,512,91.842,512c43.426,0,164.164,0,164.164,0s120.726,0,164.153,0C463.583,512,483.269,448.848,458.159,404.216z'/%3E%3Cpath d='M256.005,300.641c74.144,0,134.231-60.108,134.231-134.242v-32.158C390.236,60.108,330.149,0,256.005,0c-74.155,0-134.252,60.108-134.252,134.242V166.4C121.753,240.533,181.851,300.641,256.005,300.641z'/%3E%3C/svg%3E") center / contain no-repeat;
+.capacity-carriage {
+    position: relative;
+    height: calc(var(--s) * 32px);
+    aspect-ratio: 5 / 2;
+    border: calc(var(--s) * 2px) solid rgba(255,255,255,0.28);
+    border-radius: calc(var(--s) * 4px);
+    overflow: hidden;
+    background: rgba(255,255,255,0.05);
 }
 
-.capacity-head.filled {
-    background: white;
+.capacity-carriage::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transition: height 0.5s ease;
 }
+
+.capacity-carriage.empty::after { height: 20%; background: #00A0A5; } /* Linha Verde  */
+.capacity-carriage.half::after  { height: 55%; background: #FAB914; } /* Linha Amarela */
+.capacity-carriage.full::after  { height: 90%; background: #E6196E; } /* Linha Vermelha */
+
+.capacity-heads::before,
+.capacity-heads::after {
+    content: '';
+    flex-shrink: 0;
+    align-self: center;
+    width: calc(var(--s) * 12px);
+    height: calc(var(--s) * 12px);
+}
+
+/* Normal layout: chevron points right (after carriages) */
+.capacity-heads::before { display: none; }
+.capacity-heads::after {
+    border-top: calc(var(--s) * 2px) solid rgba(255,255,255,0.5);
+    border-right: calc(var(--s) * 2px) solid rgba(255,255,255,0.5);
+    transform: rotate(45deg);
+}
+
+/* Reversed layout: chevron points left (before carriages) */
+body.layout-reversed .capacity-heads::before {
+    display: block;
+    border-top: calc(var(--s) * 2px) solid rgba(255,255,255,0.5);
+    border-left: calc(var(--s) * 2px) solid rgba(255,255,255,0.5);
+    transform: rotate(-45deg);
+}
+body.layout-reversed .capacity-heads::after { display: none; }
 
 .time-block {
     display: flex;
@@ -905,13 +943,26 @@ body.layout-reversed .destination {
 .divider {
     height: 1px;
     background: rgba(255,255,255,.5);
-    margin: calc(var(--s) * 11px) 0 calc(var(--s) * 10px);
+    margin: calc(var(--s) * 8px) 0 calc(var(--s) * 10px);
+}
+
+body.layout-reversed .divider {
+    align-self: flex-end;
+}
+
+.row-next-wrap .capacity-heads {
+    align-self: flex-start;
+}
+
+body.layout-reversed .row-next-wrap .capacity-heads {
+    align-self: flex-end;
 }
 
 .row-after {
     display: flex;
     align-items: stretch;
     justify-content: space-between;
+    margin-top: auto;
 }
 
 body.layout-reversed .row-after {
@@ -924,14 +975,14 @@ body.layout-reversed .row-after {
     gap: calc(var(--s) * 32px);
     flex-shrink: 0;
     margin-left: auto;
-    padding-left: 15px;
+    padding-left: calc(var(--s) * 20px);
 }
 
 body.layout-reversed .after-group {
     margin-left: 0;
     margin-right: auto;
     padding-left: 0;
-    padding-right: 15px;
+    padding-right: calc(var(--s) * 20px);
 }
 
 .after-times {
@@ -1171,12 +1222,12 @@ body.layout-reversed .alert-strip {
             <div class="row-next-wrap">
                 <div class="row-next">
                     <div class="destination">Santa Apolónia</div>
-                    <div class="next-meta"><div class="capacity-heads"></div></div>
                     <div class="time-block">
                         <span class="time-value">4</span>
                         <span class="time-unit">MIN</span>
                     </div>
                 </div>
+                <div class="capacity-heads"></div>
             </div>
             <div class="divider"></div>
             <div class="row-after">
@@ -1209,12 +1260,12 @@ body.layout-reversed .alert-strip {
             <div class="row-next-wrap">
                 <div class="row-next">
                     <div class="destination">Santa Apolónia</div>
-                    <div class="next-meta"><div class="capacity-heads"></div></div>
                     <div class="time-block">
                         <span class="time-value">4</span>
                         <span class="time-unit">MIN</span>
                     </div>
                 </div>
+                <div class="capacity-heads"></div>
             </div>
             <div class="divider"></div>
             <div class="row-after">
@@ -1247,12 +1298,12 @@ body.layout-reversed .alert-strip {
             <div class="row-next-wrap">
                 <div class="row-next">
                     <div class="destination">Santa Apolónia</div>
-                    <div class="next-meta"><div class="capacity-heads"></div></div>
                     <div class="time-block">
                         <span class="time-value">4</span>
                         <span class="time-unit">MIN</span>
                     </div>
                 </div>
+                <div class="capacity-heads"></div>
             </div>
             <div class="divider"></div>
             <div class="row-after">
@@ -1285,12 +1336,12 @@ body.layout-reversed .alert-strip {
             <div class="row-next-wrap">
                 <div class="row-next">
                     <div class="destination">Santa Apolónia</div>
-                    <div class="next-meta"><div class="capacity-heads"></div></div>
                     <div class="time-block">
                         <span class="time-value">4</span>
                         <span class="time-unit">MIN</span>
                     </div>
                 </div>
+                <div class="capacity-heads"></div>
             </div>
             <div class="divider"></div>
             <div class="row-after">
@@ -1643,14 +1694,24 @@ function triggerMinuteBlink(el, displayedMinute) {
     el.dataset.prevMinute = String(displayedMinute);
 }
 
-function renderCapacityHeads(el, level) {
-    const capacityOrder = ['low', 'medium', 'high'];
-    const filledCount = capacityOrder.indexOf(level) + 1;
-    const heads = capacityOrder.map((_, i) =>
-        `<span class="capacity-head${i < filledCount ? ' filled' : ''}"></span>`
-    ).join('');
+function inferCarriageCount(lineName) {
+    return lineName === 'Linha Amarela' ? 3 : 6;
+}
 
-    el.innerHTML = heads;
+// carriageCapacities: ('empty' | 'half' | 'full')[]
+// When real API data is available, pass the mapped array directly instead of randomising.
+const CAPACITY_STATES = ['empty', 'half', 'full'];
+
+function randomCarriageCapacities(count) {
+    return Array.from({ length: count }, () =>
+        CAPACITY_STATES[Math.floor(Math.random() * CAPACITY_STATES.length)]
+    );
+}
+
+function renderCapacityHeads(el, carriageCapacities) {
+    el.innerHTML = carriageCapacities.map(state =>
+        `<span class="capacity-carriage ${state}"></span>`
+    ).join('');
 }
 
 const lineNames_en = {
@@ -1704,7 +1765,7 @@ const i18n = {
 
 function render() {
     const t = i18n[currentLang];
-    const { lineName, destination, clock, next, after1, after2, after3, alertIndex, capacityLevel } = currentState;
+    const { lineName, destination, clock, next, after1, after2, after3, alertIndex, carriageCapacities } = currentState;
     const displayLine = currentLang === 'en' ? lineNames_en[lineName] : lineName;
     document.querySelectorAll('.panel').forEach(el => el.style.setProperty('--line-color', lineColors[lineName]));
     document.querySelectorAll('.label').forEach(el => el.textContent = `${displayLine} · ${t.direction}`);
@@ -1722,7 +1783,7 @@ function render() {
     document.querySelectorAll('.time-block').forEach(el => el.classList.toggle('blink', next < 1));
     document.querySelectorAll('.time-unit').forEach(el => el.textContent = t.min);
     document.querySelectorAll('.after-unit').forEach(el => el.textContent = t.min);
-    document.querySelectorAll('.capacity-heads').forEach(el => renderCapacityHeads(el, capacityLevel));
+    document.querySelectorAll('.capacity-heads').forEach(el => renderCapacityHeads(el, carriageCapacities));
     document.querySelectorAll('.alert-strip').forEach(el => el.classList.toggle('visible', alertActive));
     document.querySelectorAll('.alert-text').forEach(el => {
         const msg = t.alerts(displayLine)[alertIndex];
@@ -1800,10 +1861,12 @@ function applyLiveArrival(selected) {
     const destination = selected.destination_name || 'Destino';
     const lineName = inferLineName(destination, fallbackLineName);
     const nextTrainKey = times[0].train_id ?? `${destination}:${times[0].arrival_seconds}`;
-    const capacityLevels = ['low', 'medium', 'high'];
-    const capacityLevel = nextTrainKey !== lastNextTrainKey
-        ? capacityLevels[Math.floor(Math.random() * capacityLevels.length)]
-        : (currentState.capacityLevel ?? capacityLevels[0]);
+    const carriageCount = inferCarriageCount(lineName);
+    const sameTrainAsBefore = nextTrainKey === lastNextTrainKey
+        && currentState.carriageCapacities?.length === carriageCount;
+    const carriageCapacities = sameTrainAsBefore
+        ? currentState.carriageCapacities
+        : randomCarriageCapacities(carriageCount);
     lastNextTrainKey = nextTrainKey;
 
     currentState = {
@@ -1815,7 +1878,7 @@ function applyLiveArrival(selected) {
         after2,
         after3,
         alertIndex: Math.floor(Math.random() * 3),
-        capacityLevel,
+        carriageCapacities,
     };
 
     render();
@@ -1917,7 +1980,6 @@ function randomise(forceOffline = false) {
     const lineNames = Object.keys(lineDestinations);
     const lineName = lineNames[rand(0, lineNames.length - 1)];
     const stations = lineDestinations[lineName];
-    const capacityLevels = ['low', 'medium', 'high'];
 
     const now = new Date();
     const next = rand(0, 39) / 4;
@@ -1931,7 +1993,7 @@ function randomise(forceOffline = false) {
         after2: next + rand(10, 20),
         after3: next + rand(20, 30),
         alertIndex: rand(0, 2),
-        capacityLevel: capacityLevels[rand(0, capacityLevels.length - 1)],
+        carriageCapacities: randomCarriageCapacities(inferCarriageCount(lineName)),
     };
 
     if (!alertActive && Math.random() < 0.3) setAlert(true);
