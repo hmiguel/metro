@@ -198,6 +198,7 @@ body {
 .sel-row {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 16px;
     padding: 10px 16px;
     border-bottom: 2px solid var(--sel-border);
@@ -314,7 +315,13 @@ body {
 
 
 /* ── Icon-only buttons ───────── */
-.selector button.icon-btn,
+.selector button.icon-btn {
+    padding: 7px 11px;
+    font-size: 12px;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
 .heading button.icon-btn {
     padding: 7px 11px;
     font-size: 15px;
@@ -424,6 +431,7 @@ body {
     font-size: 12px;
     font-weight: 500;
     letter-spacing: .02em;
+    line-height: 1;
     padding: 7px 11px;
     min-width: 150px;
     width: min(220px, 44vw);
@@ -478,6 +486,13 @@ body {
     color: var(--primary);
 }
 
+/* ── Station row groups ──────── */
+.station-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 /* ── Destination row (select + random btn) ── */
 .dest-row {
     display: flex;
@@ -502,6 +517,7 @@ body {
     font-size: 12px;
     font-weight: 500;
     letter-spacing: .02em;
+    line-height: 1;
     padding: 7px 11px;
     cursor: pointer;
     min-width: 120px;
@@ -657,6 +673,16 @@ body {
     }
     .station-search {
         width: 100%;
+        min-width: 0;
+    }
+    .station-search-wrap {
+        width: 100%;
+    }
+    .dest-row {
+        width: 100%;
+    }
+    .dest-row .destination-select {
+        flex: 1;
         min-width: 0;
     }
 }
@@ -980,6 +1006,8 @@ body.layout-reversed .alert-strip {
     z-index: 1;
 }
 
+.capacity-hidden .capacity-heads { visibility: hidden; }
+
 @keyframes marquee {
     0%   { transform: translateX(var(--marquee-from)); }
     100% { transform: translateX(var(--marquee-to)); }
@@ -1029,25 +1057,29 @@ body.layout-reversed .alert-strip {
 <div class="selector">
     <!-- Station + Destination -->
     <div class="sel-row">
-        <span class="sel-label" id="txt-station-label">Estação</span>
-        <div class="station-search-wrap">
-            <input id="station-search" class="station-search" placeholder="Estação (nome ou código)" oninput="updateStationSuggestions()" onfocus="updateStationSuggestions()" onkeydown="handleStationSearchKeydown(event)" />
-            <div id="station-suggestions" class="station-suggestions hidden"></div>
+        <div class="station-group">
+            <span class="sel-label-inline" id="txt-station-label">Estação</span>
+            <div class="station-search-wrap">
+                <input id="station-search" class="station-search" placeholder="Estação (nome ou código)" oninput="updateStationSuggestions()" onfocus="updateStationSuggestions()" onkeydown="handleStationSearchKeydown(event)" />
+                <div id="station-suggestions" class="station-suggestions hidden"></div>
+            </div>
         </div>
-        <span class="sel-label-inline" id="txt-dest-label">Destino</span>
-        <div class="dest-row">
-            <select id="destination-select" class="destination-select" onchange="selectDestination(this.value)">
-                <option value="">--</option>
-            </select>
-            <button onclick="randomStation()" class="icon-btn" title="Estação aleatória" aria-label="Estação aleatória">
-                <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="16 3 21 3 21 8"/>
-                    <line x1="4" y1="20" x2="21" y2="3"/>
-                    <polyline points="21 16 21 21 16 21"/>
-                    <line x1="15" y1="15" x2="21" y2="21"/>
-                    <line x1="4" y1="4" x2="9" y2="9"/>
-                </svg>
-            </button>
+        <div class="station-group">
+            <span class="sel-label-inline" id="txt-dest-label">Destino</span>
+            <div class="dest-row">
+                <select id="destination-select" class="destination-select" onchange="selectDestination(this.value)">
+                    <option value="">--</option>
+                </select>
+                <button onclick="randomStation()" class="icon-btn" title="Estação aleatória" aria-label="Estação aleatória">
+                    <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="16 3 21 3 21 8"/>
+                        <line x1="4" y1="20" x2="21" y2="3"/>
+                        <polyline points="21 16 21 21 16 21"/>
+                        <line x1="15" y1="15" x2="21" y2="21"/>
+                        <line x1="4" y1="4" x2="9" y2="9"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1096,6 +1128,17 @@ body.layout-reversed .alert-strip {
                     <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
                 </svg>
             </button>
+        </div>
+    </div>
+
+    <!-- Ocupação -->
+    <div class="sel-row">
+        <span class="sel-label" id="txt-capacity-label">Ocupação</span>
+        <div class="sel-controls">
+            <div class="seg-group">
+                <button onclick="setCapacity(true)" id="btn-capacity-on" class="active">ON</button>
+                <button onclick="setCapacity(false)" id="btn-capacity-off">OFF</button>
+            </div>
         </div>
     </div>
 
@@ -1281,6 +1324,7 @@ body.layout-reversed .alert-strip {
 
 <script is:inline define:vars={{ stops }}>
 let alertActive = false;
+let capacityVisible = true;
 let currentLang = 'pt';
 let layoutReversed = false;
 let liveMode = false;
@@ -1343,6 +1387,13 @@ function selectType(type) {
     if (sel) sel.value = type;
     scaleToFit();
     if (alertActive) requestAnimationFrame(updateAlertScroll);
+}
+
+function setCapacity(visible) {
+    capacityVisible = visible;
+    document.getElementById('btn-capacity-on').classList.toggle('active', visible);
+    document.getElementById('btn-capacity-off').classList.toggle('active', !visible);
+    document.body.classList.toggle('capacity-hidden', !visible);
 }
 
 function setAlert(active) {
@@ -1778,6 +1829,7 @@ const pageStrings = {
         stationLabel:  'Estação',
         destLabel:     'Destino',
         alertLabel:    'Alertas',
+        capacityLabel: 'Ocupação',
         langLabel:     'Língua',
         layoutLabel:   'Orientação',
         panelLabel:    'Painel',
@@ -1797,6 +1849,7 @@ const pageStrings = {
         stationLabel:  'Station',
         destLabel:     'Destination',
         alertLabel:    'Alerts',
+        capacityLabel: 'Capacity',
         langLabel:     'Language',
         layoutLabel:   'Orientation',
         panelLabel:    'Panel',
@@ -1820,6 +1873,7 @@ function renderPage() {
     set('txt-station-label',  s.stationLabel);
     set('txt-dest-label',     s.destLabel);
     set('txt-alert-label',    s.alertLabel);
+    set('txt-capacity-label', s.capacityLabel);
     set('txt-lang-label',     s.langLabel);
     set('txt-layout-label',   s.layoutLabel);
     set('txt-panel-label',    s.panelLabel);
@@ -1888,6 +1942,7 @@ function randomise(forceOffline = false) {
 // Expose handlers for inline onclick attributes.
 window.selectType = selectType;
 window.setAlert = setAlert;
+window.setCapacity = setCapacity;
 window.setLang = setLang;
 window.setLayout = setLayout;
 window.toggleAlert = toggleAlert;
