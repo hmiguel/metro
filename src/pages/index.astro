@@ -1057,7 +1057,10 @@ body.layout-reversed .alert-strip {
     z-index: 1;
 }
 
-.capacity-hidden .capacity-heads { visibility: hidden; }
+.capacity-hidden .capacity-heads { display: none; }
+.capacity-hidden .destination { font-size: calc(var(--s) * 142px); }
+.capacity-hidden .time-value { font-size: calc(var(--s) * 142px); }
+.capacity-hidden .time-block { width: calc(var(--s) * 100px); min-width: calc(var(--s) * 100px); }
 
 @keyframes marquee {
     0%   { transform: translateX(var(--marquee-from)); }
