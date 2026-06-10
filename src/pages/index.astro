@@ -1081,6 +1081,7 @@ body.layout-reversed .alert-strip {
     width: min(1600px, 95vw);
     overflow: hidden;
     border-radius: 6px;
+    touch-action: none;
 }
 .context-bg {
     width: 100%;
@@ -2484,6 +2485,7 @@ function openContextView() {
         }
         function onMove(e) {
             if (!dragging) return;
+            e.preventDefault();
             const pt = e.touches ? e.touches[0] : e;
             slot.style.left = `${pt.clientX - ox}px`;
             slot.style.top  = `${pt.clientY - oy}px`;
@@ -2505,6 +2507,7 @@ function openContextView() {
         let lastPinchDist = null;
         function onTouchZoom(e) {
             if (e.touches.length !== 2) { lastPinchDist = null; return; }
+            e.preventDefault();
             const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
             if (lastPinchDist !== null) applyContextZoom(dist > lastPinchDist ? 1 : -1);
             lastPinchDist = dist;
