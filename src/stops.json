@@ -2,7 +2,7 @@
   {"stop_id": "AM", "name": "Alameda", "is_terminal": false, "lines": [{"line_id": "green", "name": "Linha Verde"}, {"line_id": "red", "name": "Linha Vermelha"}]},
   {"stop_id": "AF", "name": "Alfornelos", "is_terminal": false, "lines": [{"line_id": "yellow", "name": "Linha Amarela"}]},
   {"stop_id": "AH", "name": "Alto dos Moinhos", "is_terminal": false, "lines": [{"line_id": "blue", "name": "Linha Azul"}]},
-  {"stop_id": "AL", "name": "Alvalade", "is_terminal": false, "lines": [{"line_id": "yellow", "name": "Linha Amarela"}]},
+  {"stop_id": "AL", "name": "Alvalade", "is_terminal": false, "lines": [{"line_id": "green", "name": "Linha Verde"}]},
   {"stop_id": "AS", "name": "Amadora Este", "is_terminal": false, "lines": [{"line_id": "blue", "name": "Linha Azul"}]},
   {"stop_id": "AX", "name": "Ameixoeira", "is_terminal": false, "lines": [{"line_id": "yellow", "name": "Linha Amarela"}]},
   {"stop_id": "AN", "name": "Anjos", "is_terminal": false, "lines": [{"line_id": "green", "name": "Linha Verde"}]},

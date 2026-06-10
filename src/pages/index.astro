@@ -244,7 +244,8 @@ body {
 
 /* ── Base button ─────────────── */
 .selector button,
-.heading button {
+.heading button,
+.context-preview-btn-wrap button {
     background: transparent;
     border: 2px solid var(--btn-border);
     color: var(--btn-color);
@@ -264,14 +265,16 @@ body {
 }
 
 .selector button:hover,
-.heading button:hover {
+.heading button:hover,
+.context-preview-btn-wrap button:hover {
     background: var(--btn-hover-bg);
     border-color: var(--btn-hover-border);
     color: var(--btn-hover-color);
 }
 
 .selector button.active,
-.heading button.active {
+.heading button.active,
+.context-preview-btn-wrap button.active {
     background: var(--btn-active-bg);
     border-color: var(--btn-active-border);
     color: var(--btn-active-color);
@@ -1066,6 +1069,108 @@ body.layout-reversed .alert-strip {
     0%   { transform: translateX(var(--marquee-from)); }
     100% { transform: translateX(var(--marquee-to)); }
 }
+
+/* ── Context / In-situ View ──────────────────────────────── */
+.context-inline {
+    display: none;
+    margin-top: 12px;
+}
+.context-inline.visible { display: block; }
+.context-scene {
+    position: relative;
+    width: min(1600px, 95vw);
+    overflow: hidden;
+    border-radius: 6px;
+}
+.context-bg {
+    width: 100%;
+    display: block;
+    pointer-events: none;
+}
+.context-panel-slot {
+    position: absolute;
+    top: 13%;
+    left: 31%;
+    width: 38%;
+    filter: drop-shadow(0 4px 16px rgba(0,0,0,.65));
+    cursor: grab;
+    user-select: none;
+}
+.context-panel-slot.dragging { cursor: grabbing; }
+.context-panel-slot::before,
+.context-panel-slot::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    width: 4px;
+    height: 500px;
+    background: linear-gradient(to bottom, rgba(20,20,20,0) 0%, rgba(20,20,20,.85) 100%);
+    border-radius: 2px;
+}
+.context-panel-slot::before { left: 22%; transform: translateX(-50%); }
+.context-panel-slot::after  { left: 78%; transform: translateX(-50%); }
+.context-preview-btn-wrap {
+    display: flex;
+    margin-top: 10px;
+}
+body.hall-mode .context-preview-btn-wrap { display: none; }
+.context-expand-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,.45);
+    border: none;
+    color: rgba(255,255,255,.8);
+    cursor: pointer;
+    padding: 6px;
+    line-height: 0;
+    border-radius: 4px;
+    transition: background .15s, color .15s;
+    z-index: 10;
+}
+.context-expand-btn:hover { background: rgba(0,0,0,.7); color: #fff; }
+.context-scene.expanded {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    max-width: none;
+    border-radius: 0;
+    z-index: 150;
+}
+.context-scene.expanded .context-bg { height: 100vh; object-fit: cover; }
+
+/* ── Hall Screen ─────────────────────────────────────────── */
+body.hall-mode #row-orientation,
+body.hall-mode #row-capacity,
+body.hall-mode #group-dest { display: none; }
+.hs-screen { width:1920px; height:1080px; background:#00114a; color:#fff; display:flex; flex-direction:column; overflow:hidden; position:relative; font-family:'Ubuntu',sans-serif; }
+.hs-line-bar { position:absolute; top:0; left:0; right:0; height:8px; display:flex; z-index:1; }
+.hs-line-bar-seg { flex:1; }
+.hs-header { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:24px 56px 20px; border-bottom:2px solid rgba(255,255,255,.15); flex-shrink:0; min-height:108px; }
+.hs-station-name { font-size:52px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; line-height:1; white-space:nowrap; grid-column:2; text-align:center; }
+.hs-header-right { display:flex; flex-direction:column; align-items:flex-end; gap:2px; grid-column:3; justify-self:end; }
+.hs-date { font-size:19px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.45); line-height:1; }
+.hs-clock { font-size:68px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1; }
+.hs-departures { flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.hs-row { display:flex; align-items:center; flex:1; border-left:14px solid var(--row-color,rgba(255,255,255,.3)); border-bottom:1px solid rgba(255,255,255,.08); padding:0 56px 0 40px; gap:28px; min-height:0; }
+.hs-row:last-child { border-bottom:none; }
+.hs-row-logo { width:auto; flex-shrink:0; object-fit:contain; display:block; }
+.hs-dest { flex:1; font-weight:700; text-transform:uppercase; letter-spacing:.04em; line-height:1.15; white-space:nowrap; }
+.hs-times { display:flex; align-items:center; gap:40px; flex-shrink:0; }
+.hs-time-col { display:flex; flex-direction:column; align-items:center; min-width:92px; text-align:center; line-height:1; }
+.hs-time-val { font-weight:700; font-variant-numeric:tabular-nums; line-height:1; }
+.hs-time-unit { font-size:13px; font-weight:700; letter-spacing:.09em; color:rgba(255,255,255,.38); margin-top:5px; text-transform:uppercase; }
+.hs-time-col.hs-now .hs-time-val { color:#FAB914; animation:hs-now-pulse 1.8s ease-in-out infinite; font-size:36px !important; }
+.hs-time-col.hs-now .hs-time-unit { display:none; }
+@keyframes hs-now-pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+.hs-alert-band { display:none; align-items:stretch; flex-shrink:0; padding:18px 56px; }
+.hs-alert-band.visible { display:flex; }
+.hs-alert-strip { display:flex; align-items:stretch; flex:1; background:#ffffff; overflow:hidden; border-radius:10px; min-height:88px; }
+.hs-alert-bar { width:80px; background:#ffb400; flex-shrink:0; border-radius:10px 0 0 10px; }
+.hs-alert-text { font-size:34px; font-weight:500; color:#00114a; line-height:1.25; padding:0 32px; display:flex; align-items:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
+.hs-info-band { display:flex; align-items:center; justify-content:center; padding:0 80px; border-top:2px solid rgba(255,255,255,.1); flex-shrink:0; min-height:108px; overflow:hidden; }
+.hs-info-msg { font-size:26px; font-weight:400; color:rgba(255,255,255,.38); text-align:center; line-height:1.4; transition:opacity .6s ease; }
+.hs-info-msg.fading { opacity:0; }
 </style>
 </head>
 
@@ -1118,7 +1223,7 @@ body.layout-reversed .alert-strip {
                 <div id="station-suggestions" class="station-suggestions hidden"></div>
             </div>
         </div>
-        <div class="station-group">
+        <div class="station-group" id="group-dest">
             <span class="sel-label-inline" id="txt-dest-label">Destino</span>
             <div class="dest-row">
                 <select id="destination-select" class="destination-select" onchange="selectDestination(this.value)">
@@ -1149,16 +1254,19 @@ body.layout-reversed .alert-strip {
         <span class="sel-label" id="txt-panel-label">Painel</span>
         <div class="sel-controls">
             <select id="panel-select" class="panel-select" onchange="selectType(this.value)">
-                <option value="a" selected>Tipo A · 2415 × 665 mm</option>
-                <option value="b">Tipo B · 2500 × 560 mm</option>
-                <option value="c">Tipo C · 2415 × 530 mm</option>
-                <option value="d">Tipo D · 1420 × 390 mm</option>
+                <optgroup label="Plataforma" id="optgroup-platform">
+                    <option value="a" selected>Tipo A · 2415 × 665 mm</option>
+                    <option value="b">Tipo B · 2500 × 560 mm</option>
+                    <option value="c">Tipo C · 2415 × 530 mm</option>
+                    <option value="d">Tipo D · 1420 × 390 mm</option>
+                </optgroup>
+                <option value="hall">Átrio · 952 × 536 mm</option>
             </select>
         </div>
     </div>
 
     <!-- Orientação -->
-    <div class="sel-row">
+    <div class="sel-row" id="row-orientation">
         <span class="sel-label" id="txt-layout-label">Orientação</span>
         <div class="sel-controls">
             <div class="seg-group">
@@ -1186,7 +1294,7 @@ body.layout-reversed .alert-strip {
     </div>
 
     <!-- Ocupação -->
-    <div class="sel-row">
+    <div class="sel-row" id="row-capacity">
         <span class="sel-label" id="txt-capacity-label">Ocupação</span>
         <div class="sel-controls">
             <div class="seg-group">
@@ -1364,6 +1472,56 @@ body.layout-reversed .alert-strip {
     </div>
 </div>
 
+<div class="preview-item" id="preview-hall">
+    <div class="preview-label">Átrio · 952 × 536 mm</div>
+    <div class="panel-frame" id="hall-frame">
+        <div class="hs-screen">
+            <div class="hs-line-bar" id="hs-line-bar"></div>
+            <div class="hs-header">
+                <div></div>
+                <div class="hs-station-name" id="hs-station-name">ALAMEDA</div>
+                <div class="hs-header-right">
+                    <span class="hs-date" id="hs-date"></span>
+                    <span class="hs-clock" id="hs-clock">00:00</span>
+                </div>
+            </div>
+            <div class="hs-departures" id="hs-departures"></div>
+            <div class="hs-alert-band" id="hs-alert-band">
+                <div class="hs-alert-strip">
+                    <div class="hs-alert-bar"></div>
+                    <span class="hs-alert-text" id="hs-alert-text"></span>
+                </div>
+            </div>
+            <div class="hs-info-band">
+                <span class="hs-info-msg" id="hs-info-msg"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="context-preview-btn-wrap" class="context-preview-btn-wrap">
+    <button id="btn-context" onclick="openContextView()" class="context-preview-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span id="txt-context-btn">Pré-visualizar na Plataforma</span>
+    </button>
+</div>
+
+<div id="context-inline" class="context-inline">
+    <div class="context-scene" id="context-scene">
+        <img src="/platform-bg.webp" class="context-bg" alt="Plataforma" draggable="false">
+        <div class="context-panel-slot" id="context-panel-slot"></div>
+        <button class="context-expand-btn" onclick="toggleContextExpand()" id="btn-context-expand" aria-label="Expandir">
+            <svg id="context-expand-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
 <footer class="footer">
     <span><span id="txt-footer">Os tempos apresentados são gerados aleatoriamente e não representam informação real de serviço.</span> · {year}</span>
     <a class="footer-gh" href="https://github.com/hmiguel/metro" target="_blank" rel="noopener noreferrer" aria-label="Ver código no GitHub">
@@ -1381,6 +1539,7 @@ let alertActive = false;
 let capacityVisible = true;
 let currentLang = 'pt';
 let layoutReversed = false;
+let currentPanelType = 'a';
 let liveMode = false;
 let currentTheme = 'light';
 let currentState = {};
@@ -1393,10 +1552,11 @@ const LIVE_API_BASE = 'https://4belhato.trade/api/metro/arrivals/';
 const STOPS = stops;
 
 const PANEL_SIZES = {
-    a: {w:1570, h:432, s:1.199},
-    b: {w:1625, h:364, s:1.011},
-    c: {w:1570, h:345, s:0.957},
-    d: {w:923,  h:254, s:0.705},
+    a:    {w:1570, h:432,  s:1.199},
+    b:    {w:1625, h:364,  s:1.011},
+    c:    {w:1570, h:345,  s:0.957},
+    d:    {w:923,  h:254,  s:0.705},
+    hall: {w:1920, h:1080, s:1},
 };
 
 function scaleToFit() {
@@ -1405,7 +1565,7 @@ function scaleToFit() {
         parseFloat(bodyStyles.paddingLeft) + parseFloat(bodyStyles.paddingRight);
     const available = Math.max(0, document.documentElement.clientWidth - bodyPadding);
     let activeWidth = null;
-    ['a','b','c','d'].forEach(t => {
+    ['a','b','c','d','hall'].forEach(t => {
         const preview = document.getElementById('preview-' + t);
         const frame   = preview && preview.querySelector('.panel-frame');
         if (!frame) return;
@@ -1415,6 +1575,8 @@ function scaleToFit() {
             const scale = available / fw;
             frame.style.transform       = `scale(${scale})`;
             frame.style.transformOrigin = 'top left';
+            frame.style.marginRight     = `${-Math.round(fw  * (1 - scale))}px`;
+            frame.style.marginBottom    = `${-Math.round(fh  * (1 - scale))}px`;
             preview.style.width    = Math.floor(available) + 'px';
             preview.style.height   = Math.round(fh * scale) + 21 + 'px';
             preview.style.overflow = 'hidden';
@@ -1422,6 +1584,8 @@ function scaleToFit() {
         } else {
             frame.style.transform       = '';
             frame.style.transformOrigin = '';
+            frame.style.marginRight     = '';
+            frame.style.marginBottom    = '';
             preview.style.width    = '';
             preview.style.height   = '';
             preview.style.overflow = '';
@@ -1433,14 +1597,17 @@ function scaleToFit() {
 }
 
 function selectType(type) {
-    if (!['a','b','c','d'].includes(type)) return;
-    ['a','b','c','d'].forEach(t => {
+    if (!['a','b','c','d','hall'].includes(type)) return;
+    currentPanelType = type;
+    ['a','b','c','d','hall'].forEach(t => {
         document.getElementById('preview-' + t).classList.toggle('visible', t === type);
     });
     const sel = document.getElementById('panel-select');
     if (sel) sel.value = type;
+    document.body.classList.toggle('hall-mode', type === 'hall');
     scaleToFit();
-    if (alertActive) requestAnimationFrame(updateAlertScroll);
+    if (type === 'hall') renderHallScreen();
+    if (alertActive && type !== 'hall') requestAnimationFrame(updateAlertScroll);
 }
 
 function setCapacity(visible) {
@@ -1455,9 +1622,19 @@ function setAlert(active) {
     document.getElementById('btn-alert-on').classList.toggle('active', active);
     document.getElementById('btn-alert-off').classList.toggle('active', !active);
     document.querySelectorAll('.alert-strip').forEach(el => el.classList.toggle('visible', active));
+    const hsBand = document.getElementById('hs-alert-band');
+    if (hsBand) hsBand.classList.toggle('visible', active);
+    if (active) {
+        const t = i18n[currentLang];
+        const hsText = document.getElementById('hs-alert-text');
+        if (hsText) {
+            const stLine = liveStation?.lines?.[0]?.name ?? (currentState.lineName ?? 'Linha Azul');
+            hsText.textContent = t.alerts(stLine)[currentState.alertIndex ?? 0] ?? '';
+        }
+    }
     const cycleBtn = document.getElementById('btn-alert-cycle');
     if (cycleBtn) cycleBtn.style.display = active ? '' : 'none';
-    if (active) requestAnimationFrame(updateAlertScroll);
+    if (active && currentPanelType !== 'hall') requestAnimationFrame(updateAlertScroll);
 }
 
 function setLang(lang) {
@@ -1466,8 +1643,9 @@ function setLang(lang) {
     document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
     document.documentElement.lang = lang === 'en' ? 'en' : 'pt';
     render();
-    requestAnimationFrame(updateAlertScroll);
+    if (currentPanelType !== 'hall') requestAnimationFrame(updateAlertScroll);
     renderPage();
+    if (currentPanelType === 'hall') renderHallScreen();
 }
 
 function setLayout(reversed) {
@@ -1547,11 +1725,16 @@ async function selectStationSuggestion(stopId) {
     input.value = match.name;
     liveStation = match;
     liveDestination = null;
-    const ds1 = document.getElementById('destination-select');
-    if (ds1) ds1.innerHTML = '<option value="">--</option>';
     updateLiveStationLabel();
     hideStationSuggestions();
-    await loadLiveCurrentStation();
+    if (liveMode) {
+        const ds1 = document.getElementById('destination-select');
+        if (ds1) ds1.innerHTML = '<option value="">--</option>';
+        await loadLiveCurrentStation();
+    } else {
+        populateDestinationDropdownStatic(match);
+        randomiseWithStation();
+    }
 }
 
 async function applyStationSearch() {
@@ -1565,12 +1748,17 @@ async function applyStationSearch() {
     if (!match) return;
     liveStation = match;
     liveDestination = null;
-    const ds2 = document.getElementById('destination-select');
-    if (ds2) ds2.innerHTML = '<option value="">--</option>';
     updateLiveStationLabel();
     input.value = match.name;
     hideStationSuggestions();
-    await loadLiveCurrentStation();
+    if (liveMode) {
+        const ds2 = document.getElementById('destination-select');
+        if (ds2) ds2.innerHTML = '<option value="">--</option>';
+        await loadLiveCurrentStation();
+    } else {
+        populateDestinationDropdownStatic(match);
+        randomiseWithStation();
+    }
 }
 
 function handleStationSearchKeydown(event) {
@@ -1584,16 +1772,32 @@ async function randomStation() {
     liveStation = STOPS[Math.floor(Math.random() * STOPS.length)];
     liveDestination = null;
     updateLiveStationLabel();
+    if (liveMode) {
+        const destSelect = document.getElementById('destination-select');
+        if (destSelect) destSelect.innerHTML = '<option value="">--</option>';
+        await loadLiveCurrentStation();
+    } else {
+        populateDestinationDropdownStatic(liveStation);
+        randomiseWithStation();
+    }
+}
+
+function disableLiveMode() {
+    liveMode = false;
+    const liveBtn = document.getElementById('btn-live');
+    liveBtn.classList.remove('active');
+    liveBtn.setAttribute('aria-pressed', 'false');
+    if (liveIntervalId) {
+        clearInterval(liveIntervalId);
+        liveIntervalId = null;
+    }
+    liveStation = null;
+    liveDestination = null;
     const destSelect = document.getElementById('destination-select');
     if (destSelect) destSelect.innerHTML = '<option value="">--</option>';
-    if (!liveMode) {
-        liveMode = true;
-        document.getElementById('btn-live').classList.add('active');
-        if (liveIntervalId) clearInterval(liveIntervalId);
-        liveIntervalId = setInterval(() => { loadLiveCurrentStation(); }, 15000);
-        renderPage();
-    }
-    await loadLiveCurrentStation();
+    updateLiveStationLabel();
+    renderPage();
+    randomise();
 }
 
 async function toggleLiveMode() {
@@ -1612,23 +1816,66 @@ async function toggleLiveMode() {
         await loadLiveCurrentStation();
         return;
     }
-    if (liveIntervalId) {
-        clearInterval(liveIntervalId);
-        liveIntervalId = null;
+    disableLiveMode();
+}
+
+function getStaticDestinationsForStation(stop) {
+    const seen = new Set();
+    const dests = [];
+    for (const line of (stop.lines ?? [])) {
+        for (const d of (lineDestinations[line.name] ?? [])) {
+            if (!seen.has(d)) { seen.add(d); dests.push(d); }
+        }
     }
-    liveStation = null;
-    liveDestination = null;
+    return dests;
+}
+
+function populateDestinationDropdownStatic(stop) {
     const destSelect = document.getElementById('destination-select');
-    if (destSelect) destSelect.innerHTML = '<option value="">--</option>';
-    updateLiveStationLabel();
-    randomise();
+    if (!destSelect) return;
+    const dests = getStaticDestinationsForStation(stop);
+    destSelect.innerHTML = dests.length === 0
+        ? '<option value="">--</option>'
+        : dests.map(d => `<option value="${d}">${d}</option>`).join('');
+    liveDestination = dests[0] ?? null;
+}
+
+function randomiseWithStation() {
+    if (!liveStation) { randomise(true); return; }
+    const lineName = liveDestination
+        ? inferLineName(liveDestination, liveStation.lines?.[0]?.name)
+        : (liveStation.lines?.[0]?.name ?? Object.keys(lineDestinations)[0]);
+    const dests = lineDestinations[lineName] ?? [];
+    const destination = liveDestination ?? dests[0] ?? 'Destino';
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const now = new Date();
+    const next = rand(0, 39) / 4;
+    currentState = {
+        lineName,
+        destination,
+        clock: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+        next,
+        after1: next + rand(5, 10),
+        after2: next + rand(10, 20),
+        after3: next + rand(20, 30),
+        alertIndex: rand(0, 2),
+        carriageCapacities: randomCarriageCapacities(inferCarriageCount(lineName)),
+    };
+    render();
+    requestAnimationFrame(updateAlertScroll);
 }
 
 function selectDestination(value) {
     if (!value) return;
     liveDestination = value;
-    const selected = liveArrivals.find((a) => a.destination_name === value);
-    if (selected) applyLiveArrival(selected);
+    if (liveMode) {
+        const selected = liveArrivals.find((a) => a.destination_name === value);
+        if (selected) applyLiveArrival(selected);
+    } else {
+        currentState.destination = value;
+        currentState.lineName = inferLineName(value, currentState.lineName);
+        render();
+    }
 }
 
 function updateAlertScroll() {
@@ -1738,6 +1985,129 @@ const lineDestinations = {
     'Linha Azul':     ['Reboleira', 'Santa Apolónia'],
 };
 
+const lineLogos = {
+    'Linha Vermelha': '/red-line-logo.svg',
+    'Linha Verde':    '/green-line-logo.svg',
+    'Linha Amarela':  '/yellow-line-logo.svg',
+    'Linha Azul':     '/blue-line-logo.svg',
+};
+
+function getDepFontSizes(count) {
+    if (count === 1) return { dest:192, time:160, logo:88 };
+    if (count === 2) return { dest:128, time:108, logo:72 };
+    if (count <= 4)  return { dest:96,  time:80,  logo:56 };
+    if (count <= 6)  return { dest:68,  time:58,  logo:42 };
+    return                  { dest:52,  time:44,  logo:32 };
+}
+
+function getStationDeps(stop) {
+    const deps = [];
+    for (const line of (stop.lines ?? [])) {
+        for (const dest of (lineDestinations[line.name] ?? [])) {
+            deps.push({ destination: dest, lineName: line.name });
+        }
+    }
+    return deps;
+}
+
+function renderLineBar(station) {
+    const el = document.getElementById('hs-line-bar');
+    if (!el) return;
+    const lines = station?.lines ?? [];
+    el.innerHTML = (lines.length ? lines : [{name:'Linha Azul'}]).map(l =>
+        `<div class="hs-line-bar-seg" style="background:${lineColors[l.name] ?? '#5082C3'}"></div>`
+    ).join('');
+}
+
+let hsInfoIndex = 0;
+let hsInfoTimerId = null;
+
+function renderHall(deps) {
+    const count = deps.length;
+    const fs = getDepFontSizes(count);
+    const t = i18n[currentLang];
+    const dept = document.getElementById('hs-departures');
+    if (!dept) return;
+    dept.innerHTML = deps.map((dep, di) => {
+        const color = lineColors[dep.lineName] ?? '#5082C3';
+        const logo  = lineLogos[dep.lineName]  ?? '/blue-line-logo.svg';
+        const seed  = dep.destination.charCodeAt(0) * 3 + dep.destination.length * 7 + di * 11;
+        const t1 = ((seed * 13 + 7)  % 12) + 1;
+        const t2 = t1 + ((seed * 5 + 3)  % 7) + 4;
+        const t3 = t2 + ((seed * 3 + 11) % 7) + 4;
+        const times = [t1, t2, t3];
+        const timeCols = times.map((m) => {
+            const isNow = m < 1;
+            return `<div class="hs-time-col${isNow ? ' hs-now' : ''}">
+                <span class="hs-time-val" style="font-size:${fs.time}px">${isNow ? t.hallNow : m}</span>
+                ${!isNow ? `<span class="hs-time-unit">${t.min}</span>` : ''}
+            </div>`;
+        }).join('');
+        return `<div class="hs-row" style="--row-color:${color}">
+            <img src="${logo}" class="hs-row-logo" style="height:${fs.logo}px" alt="${dep.lineName}">
+            <span class="hs-dest" style="font-size:${fs.dest}px">${dep.destination.toUpperCase()}</span>
+            <div class="hs-times">${timeCols}</div>
+        </div>`;
+    }).join('');
+}
+
+function renderHallClock() {
+    const now = new Date();
+    const hh  = String(now.getHours()).padStart(2, '0');
+    const mm  = String(now.getMinutes()).padStart(2, '0');
+    const el  = document.getElementById('hs-clock');
+    if (el) el.textContent = `${hh}:${mm}`;
+    const dateEl = document.getElementById('hs-date');
+    if (dateEl) {
+        const t = i18n[currentLang];
+        const weekdays = currentLang === 'en'
+            ? ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+            : ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+        const months = currentLang === 'en'
+            ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+            : ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+        dateEl.textContent = `${weekdays[now.getDay()]} · ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    }
+}
+
+function startHallInfoRotation() {
+    const msgs = i18n[currentLang].hallInfoMessages;
+    const el   = document.getElementById('hs-info-msg');
+    if (!el || !msgs.length) return;
+    if (hsInfoTimerId) clearInterval(hsInfoTimerId);
+    el.classList.remove('fading');
+    el.textContent = msgs[hsInfoIndex % msgs.length];
+    hsInfoTimerId = setInterval(() => {
+        el.classList.add('fading');
+        setTimeout(() => {
+            hsInfoIndex = (hsInfoIndex + 1) % msgs.length;
+            el.textContent = msgs[hsInfoIndex];
+            el.classList.remove('fading');
+        }, 600);
+    }, 8000);
+}
+
+function renderHallScreen() {
+    const station = liveStation ?? STOPS.find(s => s.stop_id === 'AM') ?? STOPS[0];
+    const stNameEl = document.getElementById('hs-station-name');
+    if (stNameEl) stNameEl.textContent = (station.name ?? '').toUpperCase();
+    renderLineBar(station);
+    renderHallClock();
+    const deps = getStationDeps(station);
+    renderHall(deps.length ? deps : [{ destination: 'Santa Apolónia', lineName: 'Linha Azul' }]);
+    const hsBand = document.getElementById('hs-alert-band');
+    if (hsBand) hsBand.classList.toggle('visible', alertActive);
+    if (alertActive) {
+        const hsText = document.getElementById('hs-alert-text');
+        if (hsText) {
+            const t = i18n[currentLang];
+            const stLine = station?.lines?.[0]?.name ?? (currentState.lineName ?? 'Linha Azul');
+            hsText.textContent = t.alerts(stLine)[currentState.alertIndex ?? 0] ?? '';
+        }
+    }
+    startHallInfoRotation();
+}
+
 function inferLineName(destinationName, fallbackLineName) {
     for (const [lineName, destinations] of Object.entries(lineDestinations)) {
         if (destinations.includes(destinationName)) return lineName;
@@ -1754,6 +2124,13 @@ const i18n = {
             `${line}: Circulação interrompida devido a causa alheia ao Metro. A reposição poderá ser superior a 15 minutos.`,
             `Linha Amarela: Circulação interrompida entre Cidade Universitária e Rato devido a avaria de comboio.`,
         ],
+        hallNow: 'a chegar',
+        hallInfoMessages: [
+            'Carregue o seu título de transporte nas máquinas automáticas ou nos postos de venda.',
+            'Informe irregularidades ao pessoal do Metro ou ligue 808 205 700.',
+            'Para informações sobre tarifas e títulos aceda a metrolisboa.pt.',
+            'Certifique-se de que valida o seu título antes de entrar na zona de passageiros.',
+        ],
     },
     en: {
         direction: 'Towards',
@@ -1762,6 +2139,13 @@ const i18n = {
             `${line}: Service delays. Waiting times may be longer than usual.`,
             `${line}: Service suspended due to external causes. Resumption may take over 15 minutes.`,
             `Yellow Line: Service suspended between Cidade Universitária and Rato due to a train breakdown.`,
+        ],
+        hallNow: 'arriving',
+        hallInfoMessages: [
+            'Charge your travel card at ticket machines or sales desks.',
+            'Report irregularities to Metro staff or call 808 205 700.',
+            'For ticketing and fare information visit metrolisboa.pt.',
+            'Please validate your ticket before entering the passenger zone.',
         ],
     },
 };
@@ -1807,18 +2191,29 @@ function render() {
             triggerMinuteBlink(afterValues[i + 2], Math.ceil(after3));
         }
     }
+    if (currentPanelType === 'hall') renderHallScreen();
+    refreshContextPanel();
 }
 
 async function loadLiveCurrentStation() {
+    if (!liveStation) {
+        if (!Array.isArray(STOPS) || STOPS.length === 0) return;
+        liveStation = STOPS[Math.floor(Math.random() * STOPS.length)];
+    }
+    let response;
     try {
-        if (!liveStation) {
-            if (!Array.isArray(STOPS) || STOPS.length === 0) throw new Error('No stops available');
-            liveStation = STOPS[Math.floor(Math.random() * STOPS.length)];
-        }
-        const fallbackLineName = liveStation.lines?.[0]?.name ?? 'Linha Azul';
-        const response = await fetch(`${LIVE_API_BASE}${encodeURIComponent(liveStation.stop_id)}`);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
+        response = await fetch(`${LIVE_API_BASE}${encodeURIComponent(liveStation.stop_id)}`);
+    } catch (networkError) {
+        console.warn('Live mode: API unreachable.', networkError);
+        disableLiveMode();
+        return;
+    }
+    if (!response.ok) {
+        console.warn(`Live mode: API returned HTTP ${response.status}.`);
+        disableLiveMode();
+        return;
+    }
+    try {
         const data = await response.json();
         const arrivals = Array.isArray(data.arrivals) ? data.arrivals : [];
         const validArrivals = arrivals.filter((a) => Array.isArray(a.times) && a.times.length > 0);
@@ -1907,8 +2302,9 @@ const pageStrings = {
         footerLive:    'Informação em tempo real fornecida pelo Metro de Lisboa, excepto alertas e ocupação de comboios.',
         aboutP1:       'O <a href="https://www.metrolisboa.pt/" target="_blank" class="about-link">Metro de Lisboa</a> iniciou a substituição dos painéis de teleinformação das plataformas — painéis com décadas de uso — por <a href="https://x.com/UnderLX/status/2060001953589887156?s=20" target="_blank" class="about-link">novos ecrãs modernos</a>. O problema: o novo design ficou aquém do esperado.',
         aboutP2:       'Esta página é uma proposta alternativa. Uma sugestão de como os novos painéis poderiam ser: claros, funcionais e com uma identidade visual à altura de uma rede metropolitana moderna.',
-        previewLabels: ['Tipo A · 2415 × 665 mm', 'Tipo B · 2500 × 560 mm', 'Tipo C · 2415 × 530 mm', 'Tipo D · 1420 × 390 mm'],
-        panelOptions:  ['Tipo A · 2415 × 665 mm', 'Tipo B · 2500 × 560 mm', 'Tipo C · 2415 × 530 mm', 'Tipo D · 1420 × 390 mm'],
+        previewLabels:  ['Tipo A · 2415 × 665 mm', 'Tipo B · 2500 × 560 mm', 'Tipo C · 2415 × 530 mm', 'Tipo D · 1420 × 390 mm', 'Átrio · 952 × 536 mm'],
+        panelOptions:   ['Tipo A · 2415 × 665 mm', 'Tipo B · 2500 × 560 mm', 'Tipo C · 2415 × 530 mm', 'Tipo D · 1420 × 390 mm', 'Átrio · 952 × 536 mm'],
+        platformGroup:  'Plataforma',
     },
     en: {
         title:         'Lisbon Metro · Passenger Information',
@@ -1927,8 +2323,9 @@ const pageStrings = {
         footerLive:    'Real-time information provided by Lisbon Metro, except alerts and train occupancy.',
         aboutP1:       '<a href="https://www.metrolisboa.pt/" target="_blank" class="about-link">Lisbon Metro</a> began replacing the passenger information displays on its platforms — panels in use for decades — with <a href="https://x.com/UnderLX/status/2060001953589887156?s=20" target="_blank" class="about-link">new modern screens</a>. The problem: the new design fell short of expectations.',
         aboutP2:       'This page is an alternative proposal — a suggestion for what the new panels could look like: clear, functional, and with a visual identity worthy of a modern metro network.',
-        previewLabels: ['Type A · 2415 × 665 mm', 'Type B · 2500 × 560 mm', 'Type C · 2415 × 530 mm', 'Type D · 1420 × 390 mm'],
-        panelOptions:  ['Type A · 2415 × 665 mm', 'Type B · 2500 × 560 mm', 'Type C · 2415 × 530 mm', 'Type D · 1420 × 390 mm'],
+        previewLabels:  ['Type A · 2415 × 665 mm', 'Type B · 2500 × 560 mm', 'Type C · 2415 × 530 mm', 'Type D · 1420 × 390 mm', 'Hall · 952 × 536 mm'],
+        panelOptions:   ['Type A · 2415 × 665 mm', 'Type B · 2500 × 560 mm', 'Type C · 2415 × 530 mm', 'Type D · 1420 × 390 mm', 'Hall · 952 × 536 mm'],
+        platformGroup:  'Platform',
     },
 };
 
@@ -1957,6 +2354,8 @@ function renderPage() {
     if (panelSel) {
         const opts = panelSel.querySelectorAll('option');
         s.panelOptions.forEach((label, i) => { if (opts[i]) opts[i].textContent = label; });
+        const grp = document.getElementById('optgroup-platform');
+        if (grp) grp.label = s.platformGroup;
     }
 }
 const THEME_SVG_SUN = `<svg aria-hidden="true" focusable="false" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path stroke-linecap="round" d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`;
@@ -2004,6 +2403,127 @@ function randomise(forceOffline = false) {
     requestAnimationFrame(updateAlertScroll);
 }
 
+// ── Context / In-situ View ───────────────────────────────
+let contextOpen = false;
+let contextZoom  = 1;
+
+function applyContextZoom(direction) {
+    contextZoom = Math.max(0.2, Math.min(4, contextZoom * (direction > 0 ? 1.1 : 1 / 1.1)));
+    const slot  = document.getElementById('context-panel-slot');
+    const scene = document.querySelector('.context-scene');
+    if (!slot || !scene) return;
+    const baseW = scene.offsetWidth * 0.38;
+    const newW  = Math.round(baseW * contextZoom);
+    slot.style.width = newW + 'px';
+    scaleContextFrame(slot, newW);
+}
+
+function scaleContextFrame(slot, slotW) {
+    const cloned = slot.querySelector('.panel-frame');
+    if (!cloned || currentPanelType === 'hall') return;
+    const nativeW = PANEL_SIZES[currentPanelType].w + 32;
+    const nativeH = PANEL_SIZES[currentPanelType].h + 38;
+    const s = slotW / nativeW;
+    cloned.style.transform       = `scale(${s})`;
+    cloned.style.transformOrigin = 'top left';
+    cloned.style.marginRight     = `${-Math.round(nativeW * (1 - s))}px`;
+    cloned.style.marginBottom    = `${-Math.round(nativeH * (1 - s))}px`;
+}
+
+function refreshContextPanel() {
+    if (!contextOpen || currentPanelType === 'hall') return;
+    const slot = document.getElementById('context-panel-slot');
+    if (!slot) return;
+    const activePreview = document.querySelector('.preview-item.visible');
+    if (!activePreview) return;
+    const frame = activePreview.querySelector('.panel-frame');
+    if (!frame) return;
+
+    const slotW = slot.offsetWidth || Math.round(document.querySelector('.context-scene')?.offsetWidth * 0.32) || 300;
+    const cloned = frame.cloneNode(true);
+    cloned.id = '';
+    cloned.style.transform = cloned.style.transformOrigin = cloned.style.marginRight = cloned.style.marginBottom = '';
+    slot.innerHTML = '';
+    slot.appendChild(cloned);
+    scaleContextFrame(slot, slotW);
+}
+
+function openContextView() {
+    if (currentPanelType === 'hall') return;
+    const inline = document.getElementById('context-inline');
+    const slot   = document.getElementById('context-panel-slot');
+    if (!inline || !slot) return;
+
+    if (contextOpen) {
+        // toggle off
+        contextOpen = false;
+        inline.classList.remove('visible');
+        document.getElementById('btn-context').classList.remove('active');
+        if (inline._cleanup) { inline._cleanup(); inline._cleanup = null; }
+        return;
+    }
+
+    contextOpen = true;
+    contextZoom  = 1;
+    slot.style.left = slot.style.top = slot.style.width = '';
+    inline.classList.add('visible');
+    document.getElementById('btn-context').classList.add('active');
+
+    requestAnimationFrame(() => {
+        refreshContextPanel();
+
+        // Drag
+        let dragging = false, ox = 0, oy = 0;
+        function onDown(e) {
+            e.preventDefault(); e.stopPropagation();
+            dragging = true;
+            const pt = e.touches ? e.touches[0] : e;
+            ox = pt.clientX - slot.offsetLeft;
+            oy = pt.clientY - slot.offsetTop;
+            slot.classList.add('dragging');
+        }
+        function onMove(e) {
+            if (!dragging) return;
+            const pt = e.touches ? e.touches[0] : e;
+            slot.style.left = `${pt.clientX - ox}px`;
+            slot.style.top  = `${pt.clientY - oy}px`;
+        }
+        function onUp() { dragging = false; slot.classList.remove('dragging'); }
+
+        slot.addEventListener('mousedown',  onDown);
+        slot.addEventListener('touchstart', onDown, { passive: false });
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('mouseup',  onUp);
+        window.addEventListener('touchend', onUp);
+
+        // Scroll-wheel zoom
+        function onWheel(e) { e.preventDefault(); applyContextZoom(-Math.sign(e.deltaY)); }
+        inline.addEventListener('wheel', onWheel, { passive: false });
+
+        // Pinch-to-zoom
+        let lastPinchDist = null;
+        function onTouchZoom(e) {
+            if (e.touches.length !== 2) { lastPinchDist = null; return; }
+            const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+            if (lastPinchDist !== null) applyContextZoom(dist > lastPinchDist ? 1 : -1);
+            lastPinchDist = dist;
+        }
+        inline.addEventListener('touchmove', onTouchZoom, { passive: false });
+
+        inline._cleanup = () => {
+            slot.removeEventListener('mousedown',  onDown);
+            slot.removeEventListener('touchstart', onDown);
+            window.removeEventListener('mousemove', onMove);
+            window.removeEventListener('touchmove', onMove);
+            window.removeEventListener('mouseup',  onUp);
+            window.removeEventListener('touchend', onUp);
+            inline.removeEventListener('wheel',     onWheel);
+            inline.removeEventListener('touchmove', onTouchZoom);
+        };
+    });
+}
+
 // Expose handlers for inline onclick attributes.
 window.selectType = selectType;
 window.setAlert = setAlert;
@@ -2019,6 +2539,25 @@ window.toggleTheme = toggleTheme;
 window.randomise = randomise;
 window.randomStation = randomStation;
 window.applyStationSearch = applyStationSearch;
+function toggleContextExpand() {
+    const scene = document.getElementById('context-scene');
+    const icon  = document.getElementById('context-expand-icon');
+    if (!scene) return;
+    const expanded = scene.classList.toggle('expanded');
+    if (icon) icon.innerHTML = expanded
+        ? '<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>'
+        : '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>';
+    // Re-scale the panel to match the new scene size
+    requestAnimationFrame(refreshContextPanel);
+}
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const scene = document.getElementById('context-scene');
+        if (scene?.classList.contains('expanded')) toggleContextExpand();
+    }
+});
+window.openContextView    = openContextView;
+window.toggleContextExpand = toggleContextExpand;
 window.selectDestination = selectDestination;
 window.updateStationSuggestions = updateStationSuggestions;
 window.selectStationSuggestion = selectStationSuggestion;
